@@ -1,0 +1,13 @@
+LICENSE
+README.md
+pyproject.toml
+requirements.txt
+src/pyclassify/__init__.py
+src/pyclassify/classifier.py
+src/pyclassify/utils.py
+src/pyclassify.egg-info/PKG-INFO
+src/pyclassify.egg-info/SOURCES.txt
+src/pyclassify.egg-info/dependency_links.txt
+src/pyclassify.egg-info/requires.txt
+src/pyclassify.egg-info/top_level.txt
+test/test_.py
