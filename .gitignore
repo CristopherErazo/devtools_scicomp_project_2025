@@ -21,5 +21,7 @@ rad.json
 #Test results file
 TestResults.xml
 # Ignore data files
-.dat
-.data
+*.dat
+*.data
+# Ignore packaging
+lib/

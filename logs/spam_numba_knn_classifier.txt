@@ -1,0 +1,145 @@
+Timer unit: 1e-06 s
+
+Total time: 0 s
+File: /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/utils.py
+Function: distance at line 7
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     7                                           @profile
+     8                                           def distance(point1,point2): 
+     9                                           	'''
+    10                                           	This function takes two inputs of type: list[float]
+    11                                           	and returns the square euclidean distance between them.
+    12                                           	
+    13                                           	Inputs: 
+    14                                           		- point1 , point2 : list(float) 
+    15                                           	Output:
+    16                                           		dis = || point1 - point2 ||**2 (float)
+    17                                           	
+    18                                           	'''
+    19                                           	if not isinstance(point1,list) or not isinstance(point2,list):
+    20                                           		raise TypeError(f'Sorry, the points must be lists, you entered a {type(point1)} and {type(point2)}')
+    21                                           	
+    22                                           	dis = 0.0
+    23                                           	for i in range(len(point1)): 
+    24                                           		dis += (point1[i] - point2[i])**2
+    25                                           	# dis = dis**(0.5)
+    26                                           	return dis
+
+Total time: 0.00876736 s
+File: /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/utils.py
+Function: majority_vote at line 49
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    49                                           @profile
+    50                                           def majority_vote(neighbors): 
+    51                                           	'''
+    52                                           	This function takes as input a list of the labels of the 
+    53                                           	neighbors of a point and return the label that wins with 
+    54                                           	majority vote
+    55                                           	
+    56                                           	Input: 
+    57                                           		- neighbours: list(int)
+    58                                           	Output:
+    59                                           		- vote
+    60                                           	'''
+    61       921        947.2      1.0     10.8  	if not isinstance(neighbors,list):
+    62                                           		raise TypeError(f'Sorry, the input must be list, you entered a {type(neighbors)}')
+    63                                           	
+    64       921        571.6      0.6      6.5  	k = len(neighbors)
+    65       921        284.3      0.3      3.2  	total = 0
+    66     10131       2963.0      0.3     33.8  	for lb in neighbors: # We basically count the # of one's
+    67      9210       2656.0      0.3     30.3  		total += lb
+    68                                           	
+    69       921        706.6      0.8      8.1  	if 2*total > k : # Then there are more ones than zeros
+    70       316        130.9      0.4      1.5  		vote = 1
+    71                                           	else: 
+    72       605        232.3      0.4      2.6  		vote = 0
+    73                                           
+    74       921        275.5      0.3      3.1  	return vote
+
+Total time: 28.2817 s
+File: /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/utils.py
+Function: distance_numpy at line 28
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    28                                           @profile
+    29                                           def distance_numpy(point1,point2):
+    30                                           	'''
+    31                                           	This function takes two inputs of type: list[float]
+    32                                           	and returns the square euclidean distance between them using numpy
+    33                                           	
+    34                                           	Inputs: 
+    35                                           		- point1 , point2 : list(float) 
+    36                                           	Output:
+    37                                           		dis = || point1 - point2 ||**2 (float)
+    38                                           	
+    39                                           	'''
+    40   3389280    1773024.1      0.5      6.3  	if not isinstance(point1,np.ndarray) or not isinstance(point2,np.ndarray):
+    41                                           		raise TypeError(f'Sorry, the points must be np arrays, you entered a {type(point1)} and {type(point2)}')
+    42                                           	
+    43   3389280    1507867.8      0.4      5.3  	if not point1.shape == point2.shape:
+    44                                           		raise TypeError(f'The shapes should be the same')
+    45                                           	#dis = np.sum((point1-point2)**2)
+    46   3389280   23744848.4      7.0     84.0  	dis = np.linalg.norm(point1-point2)
+    47   3389280    1255910.3      0.4      4.4  	return float(dis)
+
+Total time: 44.5185 s
+File: /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/classifier.py
+Function: _get_k_nearest_neighbors at line 22
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    22                                           	@profile
+    23                                           	def _get_k_nearest_neighbors(self,X,Y,x):
+    24                                           		'''
+    25                                           		This method gets the dataset (X,Y) and a new test point x
+    26                                           		and returns a list of the labels of the k-NN of x.
+    27                                           		
+    28                                           		Inputs: 
+    29                                           		X : list(list(float))
+    30                                           		Y : list([0,1])
+    31                                           
+    32                                           		Output:
+    33                                           		neighbors : list(int)
+    34                                           		'''
+    35                                           
+    36       921        426.0      0.5      0.0  		N_samples = len(Y)
+    37       921   43890206.3  47654.9     98.6  		distances = [self.distance(x,xi) for xi in X]
+    38       921     622867.5    676.3      1.4  		idx = sorted(range(N_samples) , key = distances.__getitem__)[:self.k]
+    39       921       4717.4      5.1      0.0  		neighbors = [Y[i] for i in idx]
+    40       921        282.3      0.3      0.0  		return neighbors
+
+Total time: 44.5874 s
+File: /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/classifier.py
+Function: __call__ at line 42
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    42                                           	@profile
+    43                                           	def __call__(self, data ,new_points):
+    44                                           		'''
+    45                                           		This method returns the predicted label for each new 
+    46                                           		point based in the data using the majority vote rule.
+    47                                           		'''
+    48                                           		
+    49                                           		
+    50         1          1.7      1.7      0.0  		X , Y = data
+    51         1          0.8      0.8      0.0  		if self.backhand == 'numpy': 
+    52         1      11316.6  11316.6      0.0  			X = np.array(X)
+    53         1       2887.2   2887.2      0.0  			new_points = np.array(new_points)
+    54         1          0.9      0.9      0.0  		predictions = []
+    55       922        925.2      1.0      0.0  		for x in new_points: 
+    56       921   44548247.1  48369.4     99.9  			neighbors = self._get_k_nearest_neighbors(X,Y,x)
+    57       921      23194.4     25.2      0.1  			vote = majority_vote(neighbors)
+    58       921        796.6      0.9      0.0  			predictions.append(vote)
+    59         1          0.2      0.2      0.0  		return predictions
+
+  0.00 seconds - /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/utils.py:7 - distance
+  0.01 seconds - /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/utils.py:49 - majority_vote
+ 28.28 seconds - /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/utils.py:28 - distance_numpy
+ 44.52 seconds - /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/classifier.py:22 - _get_k_nearest_neighbors
+ 44.59 seconds - /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/pyclassify/classifier.py:42 - __call__

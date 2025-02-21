@@ -1,0 +1,3 @@
+k: 10
+dataset: ./data/ionosphere.data
+backhand: 'numpy'

@@ -1,7 +1,10 @@
 import os
 import yaml
-
+from line_profiler import profile 
+import numpy as np
 # Distance function
+
+@profile
 def distance(point1,point2): 
 	'''
 	This function takes two inputs of type: list[float]
@@ -10,7 +13,7 @@ def distance(point1,point2):
 	Inputs: 
 		- point1 , point2 : list(float) 
 	Output:
-		dis = || point1 - point2 ||**2
+		dis = || point1 - point2 ||**2 (float)
 	
 	'''
 	if not isinstance(point1,list) or not isinstance(point2,list):
@@ -22,7 +25,28 @@ def distance(point1,point2):
 	# dis = dis**(0.5)
 	return dis
 
+@profile
+def distance_numpy(point1,point2):
+	'''
+	This function takes two inputs of type: list[float]
+	and returns the square euclidean distance between them using numpy
+	
+	Inputs: 
+		- point1 , point2 : list(float) 
+	Output:
+		dis = || point1 - point2 ||**2 (float)
+	
+	'''
+	if not isinstance(point1,np.ndarray) or not isinstance(point2,np.ndarray):
+		raise TypeError(f'Sorry, the points must be np arrays, you entered a {type(point1)} and {type(point2)}')
+	
+	if not point1.shape == point2.shape:
+		raise TypeError(f'The shapes should be the same')
+	#dis = np.sum((point1-point2)**2)
+	dis = np.linalg.norm(point1-point2)
+	return float(dis)
 
+@profile
 def majority_vote(neighbors): 
 	'''
 	This function takes as input a list of the labels of the 
@@ -66,7 +90,7 @@ def read_file(file):
 			values = line.strip().split(',')
 			X.append([float(v) for v in values[:-1]])
 			label = values[-1]
-			if label == 'g': 
+			if label == 'g' or label == '1': 
 				Y.append(1)
 			else: 
 				Y.append(0)

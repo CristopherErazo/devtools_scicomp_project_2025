@@ -44,12 +44,13 @@ def kNN_classification(fraction_train = 0.8,shuffle=False):
     conf = read_config(config_path)
     file = conf['dataset']
     k = conf['k']
+    backhand = conf['backhand']
     # Load the data
     data = read_file(file)
     # Split the data
     data_train , data_test = split_data(data,fraction_train=fraction_train,shuffle=shuffle)
     # Initialize classifier
-    classifier = kNN(k=k)
+    classifier = kNN(k=k,backhand=backhand)
     # Unpack test data
     X_test , Y_test = data_test
     # Make predictions
@@ -67,4 +68,4 @@ def kNN_classification(fraction_train = 0.8,shuffle=False):
 
 
 if __name__ == '__main__': 
-    kNN_classification()
+    kNN_classification(shuffle=False)
