@@ -21,5 +21,22 @@ rad.json
 #Test results file
 TestResults.xml
 # Ignore data files
-.dat
-.data
+*.dat
+*.data
+#
+lib\
+
+
+.eggs/
+
+*.egg-info/
+*.egg
+
+*.data
+*.dat
+data/
+build/
+
+MakeFile
+
+lightning_logs/
