@@ -21,5 +21,28 @@ rad.json
 #Test results file
 TestResults.xml
 # Ignore data files
-.dat
-.data
+*.dat
+*.data
+#
+lib\
+
+*.so
+
+__pycache__/ 
+hopfield.py
+
+logs/
+
+.eggs/
+
+*.egg-info/
+*.egg
+
+*.data
+*.dat
+data/
+build/
+
+MakeFile
+
+lightning_logs/

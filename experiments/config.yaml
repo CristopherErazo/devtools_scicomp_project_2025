@@ -1,0 +1,8 @@
+mode : 'single_chain'
+N : 1000
+N_walkers : 1
+N_samples : 100
+dt_samples : 1
+T : 0.45
+# store : True
+# progress : True
