@@ -5,6 +5,7 @@ pluggy==1.5.0
 pytest==8.3.4
 tomli==2.2.1
 PyYAML
+numba
 numpy
 jax
 
