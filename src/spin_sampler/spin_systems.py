@@ -18,7 +18,7 @@ def define_hopfield_model(N , p , N_walkers = 1,mode = 'sigle_chain', backend = 
     as J = 1/N * patterns @ patterns.T  with the diagonal set to zero.
 
     Parameters:
-    ----------
+    -----------
     - N: Number of spins or neurons.
     - p: Number of random patterns.
     - N_walkers: Number of chains to run in parallel.
@@ -75,7 +75,7 @@ def define_SK_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy', see
 
 
     Parameters:
-    ----------
+    -----------
     - N: Number of spins or neurons.
     - N_walkers: Number of chains to run in parallel.
     - mode: Sampling mode ('single_chain', 'multi_chain', 'multi_couplings').
@@ -132,7 +132,7 @@ def define_random_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy',
 
 
     Parameters:
-    ----------
+    -----------
     - N: Number of spins or neurons.
     - N_walkers: Number of chains to run in parallel.
     - mode: Sampling mode ('single_chain', 'multi_chain', 'multi_couplings').
@@ -179,7 +179,7 @@ def initialize_spins(N,N_walkers = 1, mode = 'sigle_chain', backend = 'numpy', s
 
 
     Parameters:
-    ----------
+    -----------
     - N: Number of spins or neurons.
     - N_walkers: Number of chains to run in parallel.
     - mode: Sampling mode ('single_chain', 'multi_chain', 'multi_couplings').

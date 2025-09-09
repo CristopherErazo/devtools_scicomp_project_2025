@@ -27,6 +27,7 @@ TestResults.xml
 lib\
 
 *.so
+docs/_build
 
 __pycache__/ 
 hopfield.py
