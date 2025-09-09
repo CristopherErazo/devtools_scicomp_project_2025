@@ -29,6 +29,11 @@ jobs:
         pip install pytest sphinx
         pip install .
 
+    - name: Build compiled_gibbs
+      run: |
+        source venv/bin/activate
+        python src/spin_sampler/compile_gibbs.py
+
     - name: Run tests
       run: |
         source venv/bin/activate
