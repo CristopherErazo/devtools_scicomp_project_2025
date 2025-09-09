@@ -29,17 +29,28 @@ jobs:
         source venv/bin/activate
         pip install -r requirements.txt
         pip install pytest sphinx
-        pip install .
 
     - name: Build compiled_gibbs
       run: |
         source venv/bin/activate
-        python src/spin_sampler/compile_gibbs.py
+        python src/spin_sampler/compile_gibbs.py  
+
+    - name: Debug compiled_gibbs
+      run: |
+        ls -l src/spin_sampler
+        ls -l 
+
+    - name: Install package
+      run: |
+        source venv/bin/activate
+        pip install .
+
 
     - name: Run tests
       run: |
         source venv/bin/activate
         pytest
+        
 
     - name: Generate documentation
       run: |
@@ -53,8 +64,10 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: docs/_build/html
 
+
     # - name: Upload documentation
     #   uses: actions/upload-artifact@v3
     #   with:
     #     name: documentation
     #     path: docs/_build/html/
+

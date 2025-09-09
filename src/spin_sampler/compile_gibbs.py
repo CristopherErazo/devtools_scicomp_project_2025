@@ -1,7 +1,6 @@
 from numba.pycc import CC
 from numba import njit , types
 import numpy as np
-from spin_sampler.utils import prob_plus_numba
 
 import warnings
 from numba.core.errors import NumbaPerformanceWarning
@@ -9,6 +8,22 @@ from numba.core.errors import NumbaPerformanceWarning
 # Suppress NumbaDebugInfoWarning
 warnings.filterwarnings("ignore", category=NumbaPerformanceWarning)
 
+
+@njit
+def prob_plus_numba(x):
+    """
+    Computes the probability p_plus = 1 / (1 + exp(-2x)) in a numerically stable way.
+
+    Parameters:
+    - x: The input value or array.
+
+    Returns:
+    - p_plus: The computed probability, same shape as x.
+    """
+    x = np.asarray(x)  # Ensure x is a NumPy array for vectorized operations
+    ex = np.exp(-2 * np.abs(x))  # Compute exp(-2|x|) to ensure stability
+    p_plus = 0.5 * (1 + np.sign(x) * (1 - ex) / (1 + ex))
+    return p_plus
 
 # Create a compilation module
 cc = CC('compiled_gibbs')  # This will generate `compiled_gibbs.so`

@@ -9,4 +9,4 @@ numba
 line_profiler
 numpy
 jax
-
+sphinx_rtd_theme
