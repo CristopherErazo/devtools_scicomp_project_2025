@@ -6,6 +6,7 @@ pytest==8.3.4
 tomli==2.2.1
 PyYAML
 numba
+line_profiler
 numpy
 jax
 
