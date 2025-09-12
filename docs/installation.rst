@@ -1,12 +1,33 @@
 Installation
 ============
 
-To install Spin Sampler, use pip:
+From GitHub
+-----------
+To install the Spin Sampler library, follow these steps (recomended to work on a virtual environment):
 
-.. code-block:: bash
+1. Clone the repository:
 
-    pip install spin-sampler
+   .. code-block:: bash
 
-Requirements:
-- Python 3.9 or higher
-- NumPy
+       git clone https://github.com/CristopherErazo/devtools_scicomp_project_2025.git
+
+2. Navigate to the root directory and install the required dependencies:
+
+   .. code-block:: bash
+
+       pip install -r requirements.txt
+
+4. Install the package:
+
+   .. code-block:: bash
+
+       pip install .
+
+Tests
+-----
+
+You can run the unit tests just by running:
+
+    .. code-block:: bash
+
+        pytest

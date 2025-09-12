@@ -1,14 +1,9 @@
 import numpy as np
 import argparse
-from spin_sampler.sampling import Sampler
-from spin_sampler.utils import read_config
-from line_profiler import profile
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-
-import jax
-from spin_sampler.spin_systems import *
-
+from line_profiler import profile
+from spin_sampler import Sampler, define_hopfield_model , initialize_spins, read_config
 
 
 plt.rcParams['mathtext.fontset'] = 'cm'
@@ -16,58 +11,6 @@ plt.rcParams['font.family'] = 'STIXGeneral'
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
 
-
-def get_patterns(N_walkers, N, p , multi_patterns = True):
-    """Generate random patterns of size N with p patterns."""
-    # Generate random patterns
-    if multi_patterns:
-        patterns = np.random.choice([-1, 1], size=(N_walkers,N, p))
-    else:
-        patterns = np.random.choice([-1, 1], size=(N, p))
-    
-    if multi_patterns and N_walkers==1: patterns = patterns[0]
-
-    return patterns
-
-
-def weight_matrix(patterns):
-    """Return the weight matrix."""
-    # Initialize weights
-    if len(patterns.shape) == 2:
-        N , p = patterns.shape
-        J = 1/N * (patterns @ patterns.T - p*np.eye(N))
-    else:
-        _ , N , p = patterns.shape
-        J = 1/N * np.array( [pat @ pat.T - p*np.eye(N) for pat in patterns] )
-    return J
-
-
-# @profile
-
-def test_gibbs_step_functionality():
-    N = 10
-    N_walkers = 3
-    T = 2.0 
-    for backend in ['numba']:
-        key = jax.random.PRNGKey(42) if backend == 'jax' else 1
-        for mode in ['single_chain', 'multi_chain', 'multi_couplings']:
-            print(backend,mode)
-
-            Nw = N_walkers if mode == 'multi_couplings' else 1
-            J = define_SK_model(N, N_walkers=Nw, mode=mode, backend=backend, seed=42)
-            sampler = Sampler(J, T, mode=mode, backend=backend)
-
-            Nw = 1 if mode == 'single_chain' else N_walkers
-            S_in = initialize_spins(N,N_walkers=Nw,mode=mode,backend=backend,seed=42)
-            print(S_in.shape,J.shape)
-            print(S_in.dtype,J.dtype)
-            # S_out , key = sampler.gibbs_step(S_in.copy(), J, T,True,key)
-            
-            # # State should change
-            # if backend == 'jax':
-            #     assert jnp.array_equal(S_in,S_in)
-            # else:
-            #     assert np.array_equal(S_in,S_in) 
 
 def main():
     # Parse argument

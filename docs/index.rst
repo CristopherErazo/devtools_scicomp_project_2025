@@ -17,5 +17,4 @@ This guide will help you understand how to use the Spin Sampler library.
    introduction
    installation
    usage
-   modules
-
+   api

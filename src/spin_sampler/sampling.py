@@ -17,10 +17,11 @@ class Sampler:
     Gibbs Sampler for spin system with different modes.
 
     Attributes:
-    ----------
+    -----------
     - J (np.ndarray): Coupling matrix/matrices.
     - T (float): Temperature.
     - mode (str): Sampling mode ('single_chain', 'multi_chain', 'multi_couplings').
+    - backend: Backend to use ('numpy', 'numba', 'jax').
 
     '''
 
@@ -30,7 +31,7 @@ class Sampler:
         Initialize the Gibbs sampler.
 
         Parameters:
-        ----------
+        -----------
         - J: Coupling matrix (shape (N, N) or (N_walkers, N, N)). Must be symmetric for each chain.
         - T: Temperature.
         - mode: Sampling mode ('single_chain', 'multi_chain', 'multi_couplings').
@@ -92,7 +93,7 @@ class Sampler:
         Perform one Gibbs sampling step of the state S.
 
         Parameters:
-        ----------
+        -----------
         - S: Current spin configuration.
 
         """
@@ -125,7 +126,7 @@ class Sampler:
         Run Gibbs sampling as a generator.
 
         Parameters:
-        ----------
+        -----------
         - initial_state: Initial spin configuration. If None, use the last state in chain
         - N_samples: Total number of steps to perform.
         - dt_samples: Save every 'dt_samples' steps to reduce correlation.

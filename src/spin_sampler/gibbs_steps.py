@@ -144,7 +144,8 @@ def gibbs_step_single_chain_jax(S , J , T , rnd_ord = False, key = None):
         id = idx[i]
         key, subkey = jax.random.split(key)
         # Compute local field for spin i
-        h_i = jnp.dot(J[id],S)
+        # h_i = S@J[id]
+        h_i=jnp.dot(J[id],S)
         # Compute probability P(si = +1)
         p_plus = prob_plus_jax(beta * h_i)  #1 / (1 + jnp.exp(-beta_2 * h_i))
         # Update spin based on probabilities

@@ -26,7 +26,8 @@ TestResults.xml
 #
 lib\
 
-*.so
+main.tex
+# *.so
 docs/_build
 
 __pycache__/ 

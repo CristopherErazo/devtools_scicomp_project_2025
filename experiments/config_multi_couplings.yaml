@@ -1,0 +1,8 @@
+N : 2000
+N_samples : 500
+seed : 1234
+p : 20
+dt_samples : 1
+T : 1.0
+mode: multi_couplings
+N_walkers: 3
