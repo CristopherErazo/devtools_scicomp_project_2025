@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spin_sampler.spin_systems &mdash; Spin Sampler 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Spin Sampler
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Spin Sampler</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">spin_sampler.spin_systems</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for spin_sampler.spin_systems</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+
+<span class="n">type_spins_jax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">type_reals_jax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">float32</span>
+
+<span class="n">type_spins_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+<span class="n">type_reals_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+
+<span class="c1"># Define different models</span>
+
+<div class="viewcode-block" id="define_hopfield_model">
+<a class="viewcode-back" href="../../api.html#spin_sampler.define_hopfield_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">define_hopfield_model</span><span class="p">(</span><span class="n">N</span> <span class="p">,</span> <span class="n">p</span> <span class="p">,</span> <span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;single_chain&#39;</span><span class="p">,</span> <span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the Hopfield model patterns and coupling matrix. </span>
+<span class="sd">    The patterns are random binary vectors of size N with values in {-1, 1}.</span>
+<span class="sd">    The coupling matrix J is constructed using the Hebbian learning rule and the patterns</span>
+<span class="sd">    as J = 1/N * patterns @ patterns.T  with the diagonal set to zero.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - N: Number of spins or neurons.</span>
+<span class="sd">    - p: Number of random patterns.</span>
+<span class="sd">    - N_walkers: Number of chains to run in parallel.</span>
+<span class="sd">    - mode: Sampling mode (&#39;single_chain&#39;, &#39;multi_chain&#39;, &#39;multi_couplings&#39;).</span>
+<span class="sd">    - backend: Backend to use (&#39;numpy&#39;, &#39;numba&#39;, &#39;jax&#39;).</span>
+<span class="sd">    - seed: Optional seed for random number generation (int) / mandatory for jax.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - J: Coupling matrix (shape (N, N) or (N_walkers,N,N)).   </span>
+<span class="sd">    - patterns: Generated patterns (shape (N, p) or (N_walkers,N,p)).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_chain&#39;</span><span class="p">:</span> <span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers is 1 only in single chain mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers must be &gt; 1 only in multi couplings mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span> <span class="ow">and</span> <span class="n">seed</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The seed is mandatory for jax&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Initialize random seed/ key</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span> 
+            <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    
+    <span class="c1"># Define shape of patterns</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N_walkers</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+
+
+
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span> 
+        <span class="n">patterns</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">subkey</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">type_reals_jax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;multi_couplings&#39;</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="n">patterns</span> <span class="o">@</span> <span class="n">patterns</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">p</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">N</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">pat</span> <span class="o">@</span> <span class="n">pat</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">p</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">patterns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">type_reals_np</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;multi_couplings&#39;</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="n">patterns</span> <span class="o">@</span> <span class="n">patterns</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">p</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">pat</span> <span class="o">@</span> <span class="n">pat</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">p</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">J</span><span class="p">,</span> <span class="n">patterns</span></div>
+
+
+<div class="viewcode-block" id="define_SK_model">
+<a class="viewcode-back" href="../../api.html#spin_sampler.define_SK_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">define_SK_model</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;single_chain&#39;</span><span class="p">,</span> <span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the Sherrington-Kirkpatrick model coupling matrix. </span>
+<span class="sd">    The coupling matrix J is symmetric and constructed with entries drawn from a </span>
+<span class="sd">    normal distribution with mean 0 and variance 1/N, and the diagonal set to zero.</span>
+
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - N: Number of spins or neurons.</span>
+<span class="sd">    - N_walkers: Number of chains to run in parallel.</span>
+<span class="sd">    - mode: Sampling mode (&#39;single_chain&#39;, &#39;multi_chain&#39;, &#39;multi_couplings&#39;).</span>
+<span class="sd">    - backend: Backend to use (&#39;numpy&#39;, &#39;numba&#39;, &#39;jax&#39;).</span>
+<span class="sd">    - seed: Optional seed for random number generation (int) / mandatory for jax.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - J: Coupling matrix (shape (N, N) or (N_walkers,N,N)).   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_chain&#39;</span><span class="p">:</span> <span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers is 1 only in single chain mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers must be &gt; 1 only in multi couplings mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span> <span class="ow">and</span> <span class="n">seed</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The seed is mandatory for jax&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Initialize random seed/ key</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span> 
+            <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    
+    <span class="c1"># Define shape of patterns</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N_walkers</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">subkey</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">type_reals_jax</span><span class="p">)</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="p">(</span><span class="n">J</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Make symmetric with same variance</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;multi_couplings&#39;</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="n">J</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">J</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">j</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">j</span><span class="p">))</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">J</span><span class="p">])</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">type_reals_np</span><span class="p">)</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="p">(</span><span class="n">J</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;multi_couplings&#39;</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="n">J</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">J</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">j</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">j</span><span class="p">))</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">J</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">J</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">define_random_model</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;single_chain&#39;</span><span class="p">,</span> <span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the a random coupling matrix at with zero mean gaussian entries</span>
+<span class="sd">    with 1/N variance. Used for testing purposes.</span>
+
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - N: Number of spins or neurons.</span>
+<span class="sd">    - N_walkers: Number of chains to run in parallel.</span>
+<span class="sd">    - mode: Sampling mode (&#39;single_chain&#39;, &#39;multi_chain&#39;, &#39;multi_couplings&#39;).</span>
+<span class="sd">    - backend: Backend to use (&#39;numpy&#39;, &#39;numba&#39;, &#39;jax&#39;).</span>
+<span class="sd">    - seed: Optional seed for random number generation (int) / mandatory for jax.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - J: Coupling matrix (shape (N, N) or (N_walkers,N,N)).   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_chain&#39;</span><span class="p">:</span> <span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers is 1 only in single chain mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers must be &gt; 1 only in multi couplings mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span> <span class="ow">and</span> <span class="n">seed</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The seed is mandatory for jax&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Initialize random seed/ key</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span> 
+            <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    
+    <span class="c1"># Define shape of patterns</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N_walkers</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multi_couplings&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">subkey</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">type_reals_jax</span><span class="p">)</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">type_reals_np</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">J</span>
+
+
+<span class="c1"># Define different initializations</span>
+
+<div class="viewcode-block" id="initialize_spins">
+<a class="viewcode-back" href="../../api.html#spin_sampler.initialize_spins">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">initialize_spins</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;single_chain&#39;</span><span class="p">,</span> <span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span> <span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="n">ref_spin</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">m0</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize the spin states depending on the configuration.</span>
+
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - N: Number of spins or neurons.</span>
+<span class="sd">    - N_walkers: Number of chains to run in parallel.</span>
+<span class="sd">    - mode: Sampling mode (&#39;single_chain&#39;, &#39;multi_chain&#39;, &#39;multi_couplings&#39;).</span>
+<span class="sd">    - backend: Backend to use (&#39;numpy&#39;, &#39;numba&#39;, &#39;jax&#39;).</span>
+<span class="sd">    - seed: Optional seed for random number generation (int) / mandatory for jax.</span>
+<span class="sd">    - config: Initialization configuration (&#39;random&#39;, &#39;magnetized&#39;).</span>
+<span class="sd">    - ref_spin: Reference configuration for magnetized initialization (shape (N,) or (N_walkers,N)).</span>
+<span class="sd">    - m0: Initial magnetization level for magnetized initialization (float in (0,1) or array of shape (N_walkers,)).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - S0: Initial spin configuration (shape (N) or (N_walkers,N)).   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;single_chain&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers is 1 only in single chain mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;single_chain&#39;</span> <span class="ow">and</span> <span class="n">N_walkers</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of walkers must be &gt; 1 only in multi couplings mode&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span> <span class="ow">and</span> <span class="n">seed</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The seed is mandatory for jax&#39;</span><span class="p">)</span>
+    
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span><span class="p">,)</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;single_chain&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="n">N_walkers</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>   
+
+    <span class="k">if</span> <span class="n">config</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="s1">&#39;magnetized&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;config must be &#39;random&#39; or &#39;magnetized&#39;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">config</span> <span class="o">==</span> <span class="s1">&#39;magnetized&#39;</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">ref_spin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">m0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For &#39;magnetized&#39; config, ref_spin and m0 must be provided&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ref_spin</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ref_spin shape must be </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="n">m0</span> <span class="o">=</span> <span class="n">m0</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m0</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">m0</span><span class="p">]</span><span class="o">*</span><span class="n">N_walkers</span>
+        <span class="n">m0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">m0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">m0</span><span class="p">)</span> <span class="o">!=</span> <span class="n">N_walkers</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;m0 must be a float in (0,1) or an array of shape (</span><span class="si">{</span><span class="n">N_walkers</span><span class="si">}</span><span class="s2">,)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">m0</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">m0</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All elements of m0 must be in the interval (0,1)&quot;</span><span class="p">)</span>
+        
+
+    <span class="c1"># Initialize random seed/ key</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span> 
+            <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    
+
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N_walkers</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span>
+        <span class="n">S0</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">subkey</span><span class="p">,</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">type_spins_jax</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">type_spins_np</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">config</span> <span class="o">==</span> <span class="s1">&#39;magnetized&#39;</span><span class="p">:</span>
+        <span class="n">ref_spins</span> <span class="o">=</span> <span class="n">ref_spin</span><span class="p">[</span><span class="kc">None</span><span class="p">,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;single_chain&#39;</span> <span class="k">else</span> <span class="n">ref_spin</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">subkey</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">m0</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span><span class="p">)],</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_walkers</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_walkers</span><span class="p">):</span>    
+                <span class="n">S0</span> <span class="o">=</span> <span class="n">S0</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">w</span><span class="p">,</span><span class="n">indices</span><span class="p">[</span><span class="n">w</span><span class="p">]]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ref_spins</span><span class="p">[</span><span class="n">w</span><span class="p">,</span><span class="n">indices</span><span class="p">[</span><span class="n">w</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">m0</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_walkers</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_walkers</span><span class="p">):</span>    
+                <span class="n">S0</span><span class="p">[</span><span class="n">w</span><span class="p">,</span><span class="n">indices</span><span class="p">[</span><span class="n">w</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ref_spins</span><span class="p">[</span><span class="n">w</span><span class="p">,</span><span class="n">indices</span><span class="p">[</span><span class="n">w</span><span class="p">]]</span>
+    
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;single_chain&#39;</span><span class="p">:</span>
+        <span class="n">S0</span> <span class="o">=</span> <span class="n">S0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">S0</span></div>
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Cristopher Erazo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

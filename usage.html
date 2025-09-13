@@ -48,8 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#example-1-using-sampler-sample">Example 1: Using <cite>Sampler.sample</cite></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#example-2-using-sampler-run-gibbs">Example 2: Using <cite>Sampler.run_gibbs</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-simple-case">Example 1: Simple case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-general-case">Example 2: General Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-3-generator">Example 3: Generator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -81,15 +82,15 @@
              
   <section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
-<p>The Spin Sampler library provides a general purpose <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> class for Gibbs sampling of a spin system of <span class="math notranslate nohighlight">\(N\)</span> spins.</p>
-<p>To initialize the <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> we need to define the physical system, which is fully characterized in our case by its coupling matrix <span class="math notranslate nohighlight">\(\boldsymbol{J} = (J_{ij}) \in \mathbb{R}^{N\times N}\)</span>. The matrix has to be symmetric, otherwise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> will be returned. The matrix can be customized by the user, nonetheless, the library provides two classical spin glass systems integrated that can be accesed with the functions <code class="docutils literal notranslate"><span class="pre">spin_sampler.define_hopfield_model</span></code> and  <code class="docutils literal notranslate"><span class="pre">spin_sampler.define_SK_model</span></code>. See <a class="reference internal" href="api.html#api"><span class="std std-ref">API Reference</span></a> for more information.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> admits 3 different <code class="docutils literal notranslate"><span class="pre">modes</span></code> that we can use:</p>
+<p>The Spin Sampler library provides a general purpose <a class="reference internal" href="api.html#spin_sampler.Sampler" title="spin_sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> class for Gibbs sampling of a spin system of <span class="math notranslate nohighlight">\(N\)</span> spins.</p>
+<p>To initialize the <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> we need to define the physical system, which is fully characterized in our case by its coupling matrix <span class="math notranslate nohighlight">\(\boldsymbol{J} = (J_{ij}) \in \mathbb{R}^{N\times N}\)</span>. The matrix has to be symmetric, otherwise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> will be returned. The matrix can be customized by the user, nonetheless, the library provides two classical spin glass systems integrated that can be accesed with the functions <a class="reference internal" href="api.html#spin_sampler.define_hopfield_model" title="spin_sampler.define_hopfield_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">define_hopfield_model</span></code></a> and <a class="reference internal" href="api.html#spin_sampler.define_SK_model" title="spin_sampler.define_SK_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">define_SK_model</span></code></a>. See <a class="reference internal" href="api.html#api"><span class="std std-ref">API Reference</span></a> for more information.</p>
+<p>The <a class="reference internal" href="api.html#spin_sampler.Sampler" title="spin_sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> admits 3 different <code class="docutils literal notranslate"><span class="pre">modes</span></code> that we can use:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">single_chain</span></code>: This mode runs a single Markov chain for Gibbs sampling. It is the default mode and is suitable for most use cases where a single chain is sufficient to explore the state space.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">multi_chains</span></code>: This mode runs multiple Markov chains in parallel where all of them share the same coupling matrix. It is useful to explore the state space with different initial conditions or to obtain fully statistically independent samples from the distribution.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">multi_couplings</span></code>: This mode runs multiple Markov chains in parallel where each chain has a different coupling matrix. It is useful when we want to study properties of an ensemble of systems when <span class="math notranslate nohighlight">\(\boldsymbol{J}\)</span> comes from a distribution <span class="math notranslate nohighlight">\(\mathbb{P}(\boldsymbol{J})\)</span>.</p></li>
 </ul>
-<p>Changing the mode also implies modifying the dimensions of the arrays used and this has to be checked beforehand. The variable <code class="docutils literal notranslate"><span class="pre">N_walkers</span></code> define the number of chains and the shapes of the arrays should be as follows:</p>
+<p>Changing the mode also implies modifying the dimensions of the arrays used and this has to be checked beforehand. The variable <code class="docutils literal notranslate"><span class="pre">N_walkers</span></code> (default = 1) defines the number of chains and the shapes of the arrays should be as follows:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Mode</strong></p></th>
@@ -111,41 +112,110 @@
 </tr>
 </tbody>
 </table>
-<section id="example-1-using-sampler-sample">
-<h2>Example 1: Using <cite>Sampler.sample</cite><a class="headerlink" href="#example-1-using-sampler-sample" title="Link to this heading"></a></h2>
-<p>The <cite>Sampler.sample</cite> method is a generator that can be iterated to produce samples one at a time.
-This is particularly useful for preliminary tests when we want to perform computations at each step to evaluate convergence of the algorithm or to analize physical properties over time.</p>
+<p>The build-in functions satisfy the right shapes for each case.</p>
+<section id="example-1-simple-case">
+<h2>Example 1: Simple case<a class="headerlink" href="#example-1-simple-case" title="Link to this heading"></a></h2>
+<p>The simplest usage of the package consist of extracting a set of samples from the Boltzmann distribution as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">spin_sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span> <span class="p">,</span> <span class="n">define_SK_model</span> <span class="p">,</span> <span class="n">initialize_spins</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="c1"># Define parameters</span>
+<span class="c1"># Define parameters of the system</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">100</span>     <span class="c1"># Number of spins</span>
 <span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>     <span class="c1"># Temperature</span>
 
-<span class="c1"># The couplings</span>
+<span class="c1"># Define the couplings and initialize spins</span>
 <span class="n">J</span> <span class="o">=</span> <span class="n">define_SK_model</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">initial_state</span> <span class="o">=</span> <span class="n">initialize_spins</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
 
-<span class="c1"># Initialize the sampler</span>
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single_chain&quot;</span><span class="p">)</span>
+<span class="c1"># Create a sampler instance</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+<span class="c1"># Perform sampling</span>
+<span class="n">final_state</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run_gibbs</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span><span class="n">N_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">dt_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">store</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Get the samples</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span>
+ <span class="c1"># Clean up the sampler</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">reset_chain</span><span class="p">()</span>
+<span class="c1"># chain.shape = (10,100) = (N_samples,N)</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="api.html#spin_sampler.Sampler.run_gibbs" title="spin_sampler.Sampler.run_gibbs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_gibbs</span></code></a> method returns the last spin configuration as output and if <code class="docutils literal notranslate"><span class="pre">storage</span> <span class="pre">=</span> <span class="pre">True</span></code>, the chain of values gets saved on the atribute <code class="docutils literal notranslate"><span class="pre">sampler.chain</span></code> as a list and can be accesed to with the <a class="reference internal" href="api.html#spin_sampler.Sampler.get_chain" title="spin_sampler.Sampler.get_chain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_chain</span></code></a> method as an array.</p>
+<p>The variable <code class="docutils literal notranslate"><span class="pre">dt_samples</span></code> controls how many gibbs steps we do before saving the next sample in the chain and can be used to reduce the time correlation between consecutive samples when needed.</p>
+</section>
+<section id="example-2-general-case">
+<h2>Example 2: General Case<a class="headerlink" href="#example-2-general-case" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="api.html#spin_sampler.Sampler" title="spin_sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> class allows for different backends to perform the main Gibbs update loop. The default option is <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, but it also includes a <code class="docutils literal notranslate"><span class="pre">numba</span></code> precompiled version of the numpy code and a <code class="docutils literal notranslate"><span class="pre">jax</span></code> implementation with a <code class="docutils literal notranslate"><span class="pre">&#64;jit</span></code> compiled function that uses the optimized <code class="docutils literal notranslate"><span class="pre">jax.lax.fori_loop()</span></code> function (see <a class="reference internal" href="api.html#gibbs-steps"><span class="std std-ref">Gibbs steps</span></a>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spin_sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span> <span class="p">,</span> <span class="n">define_SK_model</span> <span class="p">,</span> <span class="n">initialize_spins</span>
 
-<span class="c1"># Generate samples</span>
-<span class="n">initial_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">N_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">computation</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
-    <span class="n">magnetiaztion</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">sample</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Results of computation with sample = </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The magnetization is = </span><span class="si">{</span><span class="n">magnetization</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="c1"># Define parameters of the system</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">100</span>                 <span class="c1"># Number of spins</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>                 <span class="c1"># Temperature</span>
+<span class="n">N_walkers</span> <span class="o">=</span> <span class="mi">2</span>           <span class="c1"># Number of parallel chains</span>
+
+<span class="c1"># Define parameters of the sampler</span>
+<span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;multi_chain&#39;</span>    <span class="c1"># &#39;single_chain&#39;, &#39;multi_chain&#39; of &#39;multi_couplings&#39;</span>
+<span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;jax&#39;</span>       <span class="c1"># &#39;numpy&#39;, &#39;numba&#39; or &#39;jax&#39;</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span>               <span class="c1"># Random seed for reproducibility (mandatory for jax backend)</span>
+<span class="n">N_samples</span> <span class="o">=</span> <span class="mi">10</span>          <span class="c1"># Number of samples to draw</span>
+<span class="n">dt_samples</span> <span class="o">=</span> <span class="mi">5</span>          <span class="c1"># Number of Monte Carlo steps between samples (reduce time correlation)</span>
+<span class="n">rnd_ord</span> <span class="o">=</span> <span class="kc">True</span>          <span class="c1"># Randomize the order of spin updates (True recommended)</span>
+<span class="n">store</span> <span class="o">=</span> <span class="kc">True</span>            <span class="c1"># Store the samples</span>
+<span class="n">progress</span> <span class="o">=</span> <span class="kc">True</span>         <span class="c1"># Show a progress bar (tqdm required)</span>
+
+
+<span class="c1"># Define the couplings and initialize spins</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">define_SK_model</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N_walkers</span><span class="p">,</span><span class="n">mode</span><span class="p">,</span><span class="n">backend</span><span class="p">,</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">initial_state</span> <span class="o">=</span> <span class="n">initialize_spins</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N_walkers</span><span class="p">,</span><span class="n">mode</span><span class="p">,</span><span class="n">backend</span><span class="p">,</span><span class="n">seed</span><span class="p">)</span>
+
+<span class="c1"># Create a sampler instance</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span><span class="n">mode</span><span class="p">,</span><span class="n">backend</span><span class="p">)</span>
+<span class="c1"># Perform sampling</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run_gibbs</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span><span class="n">N_samples</span><span class="p">,</span><span class="n">dt_samples</span><span class="p">,</span><span class="n">rnd_ord</span><span class="p">,</span><span class="n">seed</span><span class="p">,</span><span class="n">store</span><span class="p">,</span><span class="n">progress</span><span class="p">);</span>
+<span class="c1"># Get the samples</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span>
+<span class="c1"># Clean up the sampler</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">reset_chain</span><span class="p">()</span>
+<span class="c1"># chain.shape = (2,10,100) = (N_walkers,N_samples,N)</span>
 </pre></div>
 </div>
 </section>
-<section id="example-2-using-sampler-run-gibbs">
-<h2>Example 2: Using <cite>Sampler.run_gibbs</cite><a class="headerlink" href="#example-2-using-sampler-run-gibbs" title="Link to this heading"></a></h2>
-<p>The <cite>Sampler.run_gibbs</cite> method executes the generator and returns the full chain of values.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run Gibbs sampling and get the full chain</span>
-<span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run_gibbs</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">N_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
+<section id="example-3-generator">
+<h2>Example 3: Generator<a class="headerlink" href="#example-3-generator" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="api.html#spin_sampler.Sampler.sample" title="spin_sampler.Sampler.sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Sampler.sample</span></code></a> method can be used as a generator to perform Gibbs sampling and yield the spin state at each step. This allows you to perform computations with the current spin state at each step.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spin_sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span><span class="p">,</span> <span class="n">define_SK_model</span><span class="p">,</span> <span class="n">initialize_spins</span>
+
+<span class="c1"># Define parameters</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">100</span>                 <span class="c1"># Number of spins</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>                 <span class="c1"># Temperature</span>
+<span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;single_chain&#39;</span>   <span class="c1"># Sampling mode</span>
+<span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;numpy&#39;</span>       <span class="c1"># Backend (&#39;numpy&#39;, &#39;numba&#39;, or &#39;jax&#39;)</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span>               <span class="c1"># Random seed for reproducibility</span>
+<span class="n">N_samples</span> <span class="o">=</span> <span class="mi">10</span>          <span class="c1"># Number of samples to draw</span>
+<span class="n">dt_samples</span> <span class="o">=</span> <span class="mi">1</span>          <span class="c1"># Number of steps between samples</span>
+<span class="n">rnd_ord</span> <span class="o">=</span> <span class="kc">True</span>          <span class="c1"># Randomize the order of spin updates (True recommended)</span>
+<span class="n">store</span> <span class="o">=</span> <span class="kc">False</span>           <span class="c1"># Store the samples</span>
+<span class="n">progress</span> <span class="o">=</span> <span class="kc">False</span>        <span class="c1"># Show a progress bar (tqdm required)</span>
+
+
+<span class="c1"># Define the coupling matrix and initialize spins</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">define_SK_model</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">initial_state</span> <span class="o">=</span> <span class="n">initialize_spins</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+
+<span class="c1"># Create a sampler instance and define the generator</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">backend</span><span class="p">)</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">N_samples</span><span class="p">,</span> <span class="n">dt_samples</span><span class="p">,</span><span class="n">rnd_ord</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">store</span><span class="p">,</span> <span class="n">progress</span><span class="p">)</span>
+
+<span class="c1"># Use the sample method as a generator</span>
+<span class="k">for</span> <span class="n">current_spin_state</span> <span class="ow">in</span> <span class="n">generator</span><span class="p">:</span>
+    <span class="c1"># Perform some computation with the current spin state</span>
+    <span class="n">magnetization</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">current_spin_state</span><span class="p">)</span>  <span class="c1"># Example computation: magnetization</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computation result: </span><span class="si">{</span><span class="n">magnetization</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>This setup gives a lot of flexibility to perform online computations, monitore the progress of the sampler or to dynamically save results in memory if needed instead of waiting until the end of the sampling as with <a class="reference internal" href="api.html#spin_sampler.Sampler.run_gibbs" title="spin_sampler.Sampler.run_gibbs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_gibbs</span></code></a>.</p>
 </section>
 </section>
 

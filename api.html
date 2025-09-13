@@ -49,17 +49,28 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#sampler-class">Sampler Class</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#spin_sampler.Sampler"><code class="docutils literal notranslate"><span class="pre">Sampler</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#spin_sampler.Sampler.get_chain"><code class="docutils literal notranslate"><span class="pre">Sampler.get_chain()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#spin_sampler.Sampler.run_gibbs"><code class="docutils literal notranslate"><span class="pre">Sampler.run_gibbs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#spin_sampler.Sampler.sample"><code class="docutils literal notranslate"><span class="pre">Sampler.sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spin_sampler.Sampler.run_gibbs"><code class="docutils literal notranslate"><span class="pre">Sampler.run_gibbs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#spin_sampler.Sampler.step"><code class="docutils literal notranslate"><span class="pre">Sampler.step()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spin_sampler.Sampler.get_chain"><code class="docutils literal notranslate"><span class="pre">Sampler.get_chain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spin_sampler.Sampler.reset_chain"><code class="docutils literal notranslate"><span class="pre">Sampler.reset_chain()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#spin_sampler.define_hopfield_model"><code class="docutils literal notranslate"><span class="pre">define_hopfield_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spin_sampler.define_SK_model"><code class="docutils literal notranslate"><span class="pre">define_SK_model()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#spin_sampler.initialize_spins"><code class="docutils literal notranslate"><span class="pre">initialize_spins()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#gibbs-steps">Gibbs steps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spin_sampler.gibbs_steps.gibbs_step_single_chain"><code class="docutils literal notranslate"><span class="pre">gibbs_step_single_chain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spin_sampler.gibbs_steps.gibbs_step_multi_chain"><code class="docutils literal notranslate"><span class="pre">gibbs_step_multi_chain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spin_sampler.gibbs_steps.gibbs_step_multi_couplings"><code class="docutils literal notranslate"><span class="pre">gibbs_step_multi_couplings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spin_sampler.gibbs_steps.gibbs_step_single_chain_jax"><code class="docutils literal notranslate"><span class="pre">gibbs_step_single_chain_jax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spin_sampler.gibbs_steps.gibbs_step_multi_chain_jax"><code class="docutils literal notranslate"><span class="pre">gibbs_step_multi_chain_jax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spin_sampler.gibbs_steps.gibbs_step_multi_couplings_jax"><code class="docutils literal notranslate"><span class="pre">gibbs_step_multi_couplings_jax()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -97,7 +108,7 @@
 <h2>Sampler Class<a class="headerlink" href="#sampler-class" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spin_sampler.Sampler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spin_sampler.</span></span><span class="sig-name descname"><span class="pre">Sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'single_chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'numpy'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spin_sampler.Sampler" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spin_sampler.</span></span><span class="sig-name descname"><span class="pre">Sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'single_chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'numpy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/sampling.html#Sampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.Sampler" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Gibbs Sampler for spin system with different modes.</p>
 <section id="attributes">
@@ -109,48 +120,11 @@
 <li><p>backend: Backend to use (‘numpy’, ‘numba’, ‘jax’).</p></li>
 </ul>
 <dl class="py method">
-<dt class="sig sig-object py" id="spin_sampler.Sampler.get_chain">
-<span class="sig-name descname"><span class="pre">get_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spin_sampler.Sampler.get_chain" title="Link to this definition"></a></dt>
-<dd><p>Get the stored chain of sampled states.</p>
-<section id="returns">
-<h4>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h4>
-<ul class="simple">
-<li><p>Array of sampled states.</p></li>
-</ul>
-</section>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="spin_sampler.Sampler.run_gibbs">
-<span class="sig-name descname"><span class="pre">run_gibbs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spin_sampler.Sampler.run_gibbs" title="Link to this definition"></a></dt>
-<dd><p>Iterate function ‘sample’ for ‘N_samples’ iterations and return the final state.</p>
-<section id="parameters">
-<h4>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h4>
-<ul class="simple">
-<li><p>initial_state: Initial spin configuration. If None, use the last state in chain</p></li>
-<li><p>N_samples: Total number of steps to perform.</p></li>
-<li><p>dt_samples: Save every ‘dt_samples’ steps to reduce correlation.</p></li>
-<li><p>rnd_ord: If True, update spins in random order.</p></li>
-<li><p>seed: Optional seed for random number generation (int) / mandatory for jax.</p></li>
-<li><p>store: If True, store the sampled states in memory.</p></li>
-<li><p>progress: If True, display a progress bar.</p></li>
-</ul>
-</section>
-<section id="id1">
-<h4>Returns<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
-<dl class="simple">
-<dt>np.ndarray</dt><dd><p>The final sampled state after <code class="docutils literal notranslate"><span class="pre">nsteps</span></code> iterations.</p>
-</dd>
-</dl>
-</section>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="spin_sampler.Sampler.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spin_sampler.Sampler.sample" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/sampling.html#Sampler.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.Sampler.sample" title="Link to this definition"></a></dt>
 <dd><p>Run Gibbs sampling as a generator.</p>
-<section id="id2">
-<h4>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<section id="parameters">
+<h4>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>initial_state: Initial spin configuration. If None, use the last state in chain</p></li>
 <li><p>N_samples: Total number of steps to perform.</p></li>
@@ -170,15 +144,58 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="spin_sampler.Sampler.run_gibbs">
+<span class="sig-name descname"><span class="pre">run_gibbs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/sampling.html#Sampler.run_gibbs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.Sampler.run_gibbs" title="Link to this definition"></a></dt>
+<dd><p>Iterate function ‘sample’ for ‘N_samples’ iterations and return the final state.</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>initial_state: Initial spin configuration. If None, use the last state in chain</p></li>
+<li><p>N_samples: Total number of steps to perform.</p></li>
+<li><p>dt_samples: Save every ‘dt_samples’ steps to reduce correlation.</p></li>
+<li><p>rnd_ord: If True, update spins in random order.</p></li>
+<li><p>seed: Optional seed for random number generation (int) / mandatory for jax.</p></li>
+<li><p>store: If True, store the sampled states in memory.</p></li>
+<li><p>progress: If True, display a progress bar.</p></li>
+</ul>
+</section>
+<section id="returns">
+<h4>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt>np.ndarray</dt><dd><p>The final sampled state after <code class="docutils literal notranslate"><span class="pre">nsteps</span></code> iterations.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="spin_sampler.Sampler.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spin_sampler.Sampler.step" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/sampling.html#Sampler.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.Sampler.step" title="Link to this definition"></a></dt>
 <dd><p>Perform one Gibbs sampling step of the state S.</p>
-<section id="id3">
-<h4>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<section id="id2">
+<h4>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>S: Current spin configuration.</p></li>
 </ul>
 </section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spin_sampler.Sampler.get_chain">
+<span class="sig-name descname"><span class="pre">get_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/sampling.html#Sampler.get_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.Sampler.get_chain" title="Link to this definition"></a></dt>
+<dd><p>Get the stored chain of sampled states.</p>
+<section id="id3">
+<h4>Returns:<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Array of sampled states.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spin_sampler.Sampler.reset_chain">
+<span class="sig-name descname"><span class="pre">reset_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/sampling.html#Sampler.reset_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.Sampler.reset_chain" title="Link to this definition"></a></dt>
+<dd><p>Reset the stored chain of sampled states.</p>
 </dd></dl>
 
 </section>
@@ -189,7 +206,7 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="spin_sampler.define_hopfield_model">
-<span class="sig-prename descclassname"><span class="pre">spin_sampler.</span></span><span class="sig-name descname"><span class="pre">define_hopfield_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_walkers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sigle_chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spin_sampler.define_hopfield_model" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.</span></span><span class="sig-name descname"><span class="pre">define_hopfield_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_walkers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single_chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/spin_systems.html#define_hopfield_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.define_hopfield_model" title="Link to this definition"></a></dt>
 <dd><p>Defines the Hopfield model patterns and coupling matrix. 
 The patterns are random binary vectors of size N with values in {-1, 1}.
 The coupling matrix J is constructed using the Hebbian learning rule and the patterns
@@ -215,11 +232,35 @@ as J = 1/N * patterns &#64; patterns.T  with the diagonal set to zero.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="spin_sampler.initialize_spins">
-<span class="sig-prename descclassname"><span class="pre">spin_sampler.</span></span><span class="sig-name descname"><span class="pre">initialize_spins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_walkers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sigle_chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spin_sampler.initialize_spins" title="Link to this definition"></a></dt>
-<dd><p>Initialize the spin states depending on the configuration.</p>
+<dt class="sig sig-object py" id="spin_sampler.define_SK_model">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.</span></span><span class="sig-name descname"><span class="pre">define_SK_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_walkers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single_chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/spin_systems.html#define_SK_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.define_SK_model" title="Link to this definition"></a></dt>
+<dd><p>Defines the Sherrington-Kirkpatrick model coupling matrix. 
+The coupling matrix J is symmetric and constructed with entries drawn from a 
+normal distribution with mean 0 and variance 1/N, and the diagonal set to zero.</p>
 <section id="id6">
 <h3>Parameters:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>N: Number of spins or neurons.</p></li>
+<li><p>N_walkers: Number of chains to run in parallel.</p></li>
+<li><p>mode: Sampling mode (‘single_chain’, ‘multi_chain’, ‘multi_couplings’).</p></li>
+<li><p>backend: Backend to use (‘numpy’, ‘numba’, ‘jax’).</p></li>
+<li><p>seed: Optional seed for random number generation (int) / mandatory for jax.</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Returns:<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>J: Coupling matrix (shape (N, N) or (N_walkers,N,N)).</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spin_sampler.initialize_spins">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.</span></span><span class="sig-name descname"><span class="pre">initialize_spins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_walkers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single_chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/spin_systems.html#initialize_spins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.initialize_spins" title="Link to this definition"></a></dt>
+<dd><p>Initialize the spin states depending on the configuration.</p>
+<section id="id8">
+<h3>Parameters:<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>N: Number of spins or neurons.</p></li>
 <li><p>N_walkers: Number of chains to run in parallel.</p></li>
@@ -231,10 +272,151 @@ as J = 1/N * patterns &#64; patterns.T  with the diagonal set to zero.</p>
 <li><p>m0: Initial magnetization level for magnetized initialization (float in (0,1) or array of shape (N_walkers,)).</p></li>
 </ul>
 </section>
-<section id="id7">
-<h3>Returns:<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>Returns:<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>S0: Initial spin configuration (shape (N) or (N_walkers,N)).</p></li>
+</ul>
+</section>
+</dd></dl>
+
+</section>
+<section id="gibbs-steps">
+<span id="id10"></span><h2>Gibbs steps<a class="headerlink" href="#gibbs-steps" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="spin_sampler.gibbs_steps.gibbs_step_single_chain">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.gibbs_steps.</span></span><span class="sig-name descname"><span class="pre">gibbs_step_single_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/gibbs_steps.html#gibbs_step_single_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.gibbs_steps.gibbs_step_single_chain" title="Link to this definition"></a></dt>
+<dd><p>One full update of spin state using Gibbs sampling for 
+single chain with J.</p>
+<section id="id11">
+<h3>Parameters:<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>S: Spin configuration shape (N,).</p></li>
+<li><p>J: Coupling matrix (shape (N, N)).</p></li>
+<li><p>T: Temperature.</p></li>
+<li><p>rnd_ord: If True, update spins in random order.</p></li>
+<li><p>key: Dummy variable for compatibility with JAX functions.</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>Returns:<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Updated spin configuration and dummy variable.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spin_sampler.gibbs_steps.gibbs_step_multi_chain">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.gibbs_steps.</span></span><span class="sig-name descname"><span class="pre">gibbs_step_multi_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/gibbs_steps.html#gibbs_step_multi_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.gibbs_steps.gibbs_step_multi_chain" title="Link to this definition"></a></dt>
+<dd><p>One full update of spin state using Gibbs sampling for 
+multiple chains with same J.</p>
+<section id="id13">
+<h3>Parameters:<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>S: Spin configuration shape (N_walkers,N).</p></li>
+<li><p>J: Coupling matrix (shape (N, N)).</p></li>
+<li><p>T: Temperature.</p></li>
+<li><p>rnd_ord: If True, update spins in random order.</p></li>
+<li><p>key: Dummy variable for compatibility with JAX functions.</p></li>
+</ul>
+</section>
+<section id="id14">
+<h3>Returns:<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Updated spin configuration and dummy variable.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spin_sampler.gibbs_steps.gibbs_step_multi_couplings">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.gibbs_steps.</span></span><span class="sig-name descname"><span class="pre">gibbs_step_multi_couplings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/gibbs_steps.html#gibbs_step_multi_couplings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.gibbs_steps.gibbs_step_multi_couplings" title="Link to this definition"></a></dt>
+<dd><p>One full update of spin state using Gibbs sampling for 
+multiple chains with different J.</p>
+<section id="id15">
+<h3>Parameters:<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>S: Spin configuration (shape (N_walkers, N)).</p></li>
+<li><p>J: Coupling matrices (shape (N_walkers, N, N)).</p></li>
+<li><p>T: Temperature.</p></li>
+<li><p>rnd_ord: If True, update spins in random order.</p></li>
+<li><p>key: Dummy variable for compatibility with JAX functions.</p></li>
+</ul>
+</section>
+<section id="id16">
+<h3>Returns:<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Updated spin configuration and dummy variable.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spin_sampler.gibbs_steps.gibbs_step_single_chain_jax">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.gibbs_steps.</span></span><span class="sig-name descname"><span class="pre">gibbs_step_single_chain_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/gibbs_steps.html#gibbs_step_single_chain_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.gibbs_steps.gibbs_step_single_chain_jax" title="Link to this definition"></a></dt>
+<dd><p>One full update of spin state using Gibbs sampling for 
+single chain with J.</p>
+<section id="id17">
+<h3>Parameters:<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>S: Spin configuration shape (N,).</p></li>
+<li><p>J: Coupling matrix (shape (N, N)).</p></li>
+<li><p>T: Temperature.</p></li>
+<li><p>rnd_ord: If True, update spins in random order.</p></li>
+<li><p>key: PRNG key for randomness.</p></li>
+</ul>
+</section>
+<section id="id18">
+<h3>Returns:<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Updated spin configuration and new PRNG key.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spin_sampler.gibbs_steps.gibbs_step_multi_chain_jax">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.gibbs_steps.</span></span><span class="sig-name descname"><span class="pre">gibbs_step_multi_chain_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/gibbs_steps.html#gibbs_step_multi_chain_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.gibbs_steps.gibbs_step_multi_chain_jax" title="Link to this definition"></a></dt>
+<dd><p>One full update of spin state using Gibbs sampling for 
+multiple chains with same J.</p>
+<section id="id19">
+<h3>Parameters:<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>S: Spin configuration shape (N_walkers,N).</p></li>
+<li><p>J: Coupling matrix (shape (N, N)).</p></li>
+<li><p>T: Temperature.</p></li>
+<li><p>rnd_ord: If True, update spins in random order.</p></li>
+<li><p>key: PRNG key for randomness.</p></li>
+</ul>
+</section>
+<section id="id20">
+<h3>Returns:<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Updated spin configuration and new PRNG key.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spin_sampler.gibbs_steps.gibbs_step_multi_couplings_jax">
+<span class="sig-prename descclassname"><span class="pre">spin_sampler.gibbs_steps.</span></span><span class="sig-name descname"><span class="pre">gibbs_step_multi_couplings_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd_ord</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spin_sampler/gibbs_steps.html#gibbs_step_multi_couplings_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spin_sampler.gibbs_steps.gibbs_step_multi_couplings_jax" title="Link to this definition"></a></dt>
+<dd><p>One full update of spin state using Gibbs sampling for 
+multiple chains with same J.</p>
+<section id="id21">
+<h3>Parameters:<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>S: Spin configuration (shape (N_walkers, N)).</p></li>
+<li><p>J: Coupling matrices (shape (N_walkers, N, N)).</p></li>
+<li><p>T: Temperature.</p></li>
+<li><p>rnd_ord: If True, update spins in random order.</p></li>
+<li><p>key: PRNG key for randomness.</p></li>
+</ul>
+</section>
+<section id="id22">
+<h3>Returns:<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Updated spin configuration and new PRNG key.</p></li>
 </ul>
 </section>
 </dd></dl>
