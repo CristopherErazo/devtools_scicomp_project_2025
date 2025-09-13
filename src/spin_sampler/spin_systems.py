@@ -10,7 +10,7 @@ type_reals_np = np.float64
 
 # Define different models
 
-def define_hopfield_model(N , p , N_walkers = 1,mode = 'sigle_chain', backend = 'numpy', seed=None):
+def define_hopfield_model(N , p , N_walkers = 1,mode = 'single_chain', backend = 'numpy', seed=None):
     """
     Defines the Hopfield model patterns and coupling matrix. 
     The patterns are random binary vectors of size N with values in {-1, 1}.
@@ -31,6 +31,7 @@ def define_hopfield_model(N , p , N_walkers = 1,mode = 'sigle_chain', backend = 
     - J: Coupling matrix (shape (N, N) or (N_walkers,N,N)).   
     - patterns: Generated patterns (shape (N, p) or (N_walkers,N,p)).
     """
+    if mode == 'multi_chain': N_walkers = 1
 
     if mode == 'multi_couplings' and N_walkers == 1:
         raise ValueError('The number of walkers is 1 only in single chain mode')
@@ -67,7 +68,7 @@ def define_hopfield_model(N , p , N_walkers = 1,mode = 'sigle_chain', backend = 
 
     return J, patterns
 
-def define_SK_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy', seed=None):
+def define_SK_model(N,N_walkers = 1,mode = 'single_chain', backend = 'numpy', seed=None):
     """
     Defines the Sherrington-Kirkpatrick model coupling matrix. 
     The coupling matrix J is symmetric and constructed with entries drawn from a 
@@ -87,6 +88,7 @@ def define_SK_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy', see
     - J: Coupling matrix (shape (N, N) or (N_walkers,N,N)).   
     """
 
+    if mode == 'multi_chain': N_walkers = 1
 
     if mode == 'multi_couplings' and N_walkers == 1:
         raise ValueError('The number of walkers is 1 only in single chain mode')
@@ -125,7 +127,7 @@ def define_SK_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy', see
     return J
 
 
-def define_random_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy', seed=None):
+def define_random_model(N,N_walkers = 1,mode = 'single_chain', backend = 'numpy', seed=None):
     """
     Defines the a random coupling matrix at with zero mean gaussian entries
     with 1/N variance. Used for testing purposes.
@@ -144,6 +146,7 @@ def define_random_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy',
     - J: Coupling matrix (shape (N, N) or (N_walkers,N,N)).   
     """
 
+    if mode == 'multi_chain': N_walkers = 1
 
     if mode == 'multi_couplings' and N_walkers == 1:
         raise ValueError('The number of walkers is 1 only in single chain mode')
@@ -173,7 +176,7 @@ def define_random_model(N,N_walkers = 1,mode = 'sigle_chain', backend = 'numpy',
 
 # Define different initializations
 
-def initialize_spins(N,N_walkers = 1, mode = 'sigle_chain', backend = 'numpy', seed=None , config = 'random', ref_spin = None, m0 = None):
+def initialize_spins(N,N_walkers = 1, mode = 'single_chain', backend = 'numpy', seed=None , config = 'random', ref_spin = None, m0 = None):
     """
     Initialize the spin states depending on the configuration.
 
@@ -193,8 +196,6 @@ def initialize_spins(N,N_walkers = 1, mode = 'sigle_chain', backend = 'numpy', s
     ----------
     - S0: Initial spin configuration (shape (N) or (N_walkers,N)).   
     """
-
-
 
     if mode != 'single_chain' and N_walkers == 1:
         raise ValueError('The number of walkers is 1 only in single chain mode')

@@ -33,7 +33,7 @@ docs/_build
 __pycache__/ 
 hopfield.py
 
-logs/
+# logs/
 
 .eggs/
 
@@ -48,3 +48,7 @@ build/
 MakeFile
 
 lightning_logs/
+
+Notebooks/
+scripts/exp.py
+scripts/run.py

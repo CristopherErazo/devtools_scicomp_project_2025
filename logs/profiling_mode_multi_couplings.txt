@@ -1,0 +1,132 @@
+/home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/experiments/config_multi_couplings.yaml
+{'N': 2000, 'N_samples': 500, 'seed': 1234, 'p': 20, 'dt_samples': 1, 'T': 1.0, 'mode': 'multi_couplings', 'N_walkers': 3}
+Running with numpy backend
+Running with numba backend
+Running with jax backend
+Wrote profile results to run_profile.py.lprof
+Timer unit: 1e-06 s
+
+Total time: 147.409 s
+File: /home/criserv/Documents/SISSA/Development Tools/devtools_scicomp_project_2025/src/spin_sampler/sampling.py
+Function: sample at line 122
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   122                                               @profile
+   123                                               def sample(self, initial_state, N_samples = 1, dt_samples = 1, rnd_ord=True, seed=None, store=False , progress = False):
+   124                                                   """
+   125                                                   Run Gibbs sampling as a generator.
+   126                                           
+   127                                                   Parameters:
+   128                                                   ----------
+   129                                                   - initial_state: Initial spin configuration. If None, use the last state in chain
+   130                                                   - N_samples: Total number of steps to perform.
+   131                                                   - dt_samples: Save every 'dt_samples' steps to reduce correlation.
+   132                                                   - rnd_ord: If True, update spins in random order.
+   133                                                   - seed: Optional seed for random number generation (int) / mandatory for jax.
+   134                                                   - store: If True, store the sampled states in memory.
+   135                                                   - progress: If True, display a progress bar.
+   136                                           
+   137                                                   Yields:
+   138                                                   ----------
+   139                                                   - The sampled state at each step (after thinning).
+   140                                                   """
+   141                                           
+   142                                                   # Validate initial_state
+   143         3          3.1      1.0      0.0          if self.backend == 'jax':
+   144         1          8.8      8.8      0.0              if not isinstance(initial_state, jnp.ndarray):
+   145                                                           raise TypeError('initial state must be a jax array.') 
+   146         1          0.7      0.7      0.0              if seed == None:
+   147                                                           raise ValueError('Must specify seed when using jax.')
+   148                                                   else: 
+   149         2          3.8      1.9      0.0              if not isinstance(initial_state, np.ndarray):
+   150                                                           raise TypeError('initial_state must be a numpy array.')
+   151                                                       
+   152         3          1.4      0.5      0.0          if self.mode == 'single_chain' and initial_state.ndim != 1:
+   153                                                       raise ValueError("For 'single_chain', initial_state must be 1D.")
+   154         3          8.1      2.7      0.0          if self.mode in ['multi_chain', 'multi_couplings'] and initial_state.ndim != 2:
+   155                                                       raise ValueError(f"For '{self.mode}', initial_state must be 2D.")
+   156         3          1.1      0.4      0.0          if self.mode == 'single_chain' and initial_state.shape[0] != self.J.shape[0]:
+   157                                                       raise ValueError("Initial state size does not match J dimensions.")
+   158         3          1.1      0.4      0.0          if self.mode == 'multi_chain' and initial_state.shape[1] != self.J.shape[0]:
+   159                                                       raise ValueError("Initial state size does not match J dimensions.")
+   160         3          9.0      3.0      0.0          if self.mode == 'multi_couplings' and (initial_state.shape[0] != self.J.shape[0] or initial_state.shape[1] != self.J.shape[1]):
+   161                                                       raise ValueError("Initial state size does not match J dimensions.")
+   162                                           
+   163                                                   # Initialize random seed
+   164         3          1.0      0.3      0.0          if seed is not None:
+   165         3          1.2      0.4      0.0              if self.backend == 'jax': 
+   166         1        434.4    434.4      0.0                  key = jax.random.PRNGKey(seed)
+   167                                                       else:
+   168         2         30.1     15.1      0.0                  np.random.seed(seed)
+   169         2          0.8      0.4      0.0                  key = 42
+   170                                           
+   171                                                   # Check if chain is empty, if not, print a warning
+   172         3          4.1      1.4      0.0          if (not len(self.chain) == 0) and store:
+   173                                                       print(f"Warning: The chain is not empty, contains {len(self.chain)} elements. New samples will be appended to the existing chain.")
+   174                                           
+   175         3      13486.4   4495.5      0.0          S = initial_state.copy()
+   176         3       5670.3   1890.1      0.0          pbar = get_progress_bar(progress, N_samples)
+   177                                           
+   178                                                   # Main sampling loop
+   179      1503       1374.2      0.9      0.0          for step in range(N_samples*dt_samples):
+   180      1500  146671529.9  97781.0     99.5              S , key = self.step(S,rnd_ord=rnd_ord,key=key)  # Perform one Gibbs sampling step
+   181                                                       # Save or yield the state every `thin_by` steps
+   182      1500       3082.9      2.1      0.0              if step % dt_samples == 0:
+   183      1500        661.0      0.4      0.0                  if store:
+   184      1500     351204.3    234.1      0.2                      self.chain.append((S.astype(self.spin_dtype)).copy())
+   185      1500      87271.8     58.2      0.1                  yield S.copy()
+   186      1500     273670.3    182.4      0.2              pbar.update(1)
+   187         3        847.0    282.3      0.0          pbar.close()
+
+Total time: 150.304 s
+File: scripts/run_profile.py
+Function: main at line 9
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     9                                           @profile
+    10                                           def main():
+    11                                               # Parse argument
+    12         1        549.7    549.7      0.0      parser = argparse.ArgumentParser()
+    13         2         70.5     35.3      0.0      parser.add_argument('-c','--config',type=str,
+    14         1          0.2      0.2      0.0                          help='Configuration file for the experiment')
+    15         1        237.6    237.6      0.0      args = parser.parse_args()
+    16         1          0.3      0.3      0.0      config_path = args.config
+    17                                           
+    18                                               # Read the configuration file
+    19         1       2418.9   2418.9      0.0      conf = read_config(config_path)
+    20         1          7.2      7.2      0.0      print(conf)
+    21                                           
+    22                                               # Define parameters
+    23         1          0.4      0.4      0.0      mode = conf['mode']
+    24         1          0.3      0.3      0.0      N = conf['N']
+    25         1          0.3      0.3      0.0      N_walkers = conf['N_walkers']
+    26         1          0.3      0.3      0.0      N_samples = conf['N_samples']
+    27         1          0.3      0.3      0.0      dt_samples = conf['dt_samples']
+    28         1          0.3      0.3      0.0      T = conf['T']
+    29         1          0.3      0.3      0.0      seed = conf['seed']
+    30         1          0.3      0.3      0.0      p = conf['p']
+    31                                           
+    32                                               # Run
+    33         1          0.3      0.3      0.0      backend = 'numpy'
+    34         1          0.6      0.6      0.0      print("Running with numpy backend")
+    35         1     241967.0 241967.0      0.2      J , _ = define_hopfield_model(N,p,N_walkers if mode=='multi_couplings' else 1,mode=mode,backend=backend,seed=seed)
+    36         1        235.2    235.2      0.0      S0 = initialize_spins(N,N_walkers,mode=mode,backend=backend,seed=seed)
+    37         1     298129.2 298129.2      0.2      sampler = Sampler(J, T, mode = mode,backend=backend)
+    38         1   47377619.5    5e+07     31.5      sampler.run_gibbs(S0, N_samples=N_samples, dt_samples=dt_samples,seed=seed, store=True,progress=True);
+    39                                           
+    40         1          0.5      0.5      0.0      backend = 'numba'
+    41         1          2.7      2.7      0.0      print("Running with numba backend")
+    42         1     227368.9 227368.9      0.2      J , _ = define_hopfield_model(N,p,N_walkers if mode=='multi_couplings' else 1,mode=mode,backend=backend,seed=seed)
+    43         1        250.7    250.7      0.0      S0 = initialize_spins(N,N_walkers,mode=mode,backend=backend,seed=seed)
+    44         1     294405.5 294405.5      0.2      sampler = Sampler(J, T, mode = mode,backend=backend)
+    45         1   20527936.1    2e+07     13.7      sampler.run_gibbs(S0, N_samples=N_samples, dt_samples=dt_samples,seed=seed, store=True,progress=True);
+    46                                           
+    47         1          1.0      1.0      0.0      backend = 'jax'
+    48         1          3.6      3.6      0.0      print("Running with jax backend")
+    49         1    1134008.9    1e+06      0.8      J , _ = define_hopfield_model(N,p,N_walkers if mode=='multi_couplings' else 1,mode=mode,backend=backend,seed=seed)
+    50         1     458926.3 458926.3      0.3      S0 = initialize_spins(N,N_walkers,mode=mode,backend=backend,seed=seed)
+    51         1     203515.8 203515.8      0.1      sampler = Sampler(J, T, mode = mode,backend=backend)
+    52         1   79536827.3    8e+07     52.9      sampler.run_gibbs(S0, N_samples=N_samples, dt_samples=dt_samples,seed=seed, store=True,progress=True);
+

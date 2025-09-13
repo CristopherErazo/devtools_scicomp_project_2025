@@ -1,0 +1,8 @@
+Ns : [128 , 256 , 512 , 1024 , 2048]
+modes : ['single_chain', 'multi_chain','multi_couplings']
+backends : ['numpy', 'numba', 'jax']
+N_walkers : 5
+dt_samples : 1
+N_samples : 2000
+T : 1.0
+N_iterations : 5

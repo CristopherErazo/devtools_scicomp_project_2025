@@ -87,6 +87,113 @@ class Sampler:
         self.float_dtype = jnp.float32 if backend == 'jax' else np.float64
 
 
+    @profile
+    def sample(self, initial_state, N_samples = 1, dt_samples = 1, rnd_ord=True, seed=None, store=False , progress = False):
+        """
+        Run Gibbs sampling as a generator.
+
+        Parameters:
+        -----------
+        - initial_state: Initial spin configuration. If None, use the last state in chain
+        - N_samples: Total number of steps to perform.
+        - dt_samples: Save every 'dt_samples' steps to reduce correlation.
+        - rnd_ord: If True, update spins in random order.
+        - seed: Optional seed for random number generation (int) / mandatory for jax.
+        - store: If True, store the sampled states in memory.
+        - progress: If True, display a progress bar.
+
+        Yields:
+        ----------
+        - The sampled state at each step (after thinning).
+        """
+    
+        # Validate initial_state
+        if self.backend == 'jax':
+            if not isinstance(initial_state, jnp.ndarray):
+                raise TypeError('initial state must be a jax array.') 
+            if seed == None:
+                raise ValueError('Must specify seed when using jax.')
+        else: 
+            if not isinstance(initial_state, np.ndarray):
+                raise TypeError('initial_state must be a numpy array.')
+            
+        if self.mode == 'single_chain' and initial_state.ndim != 1:
+            raise ValueError("For 'single_chain', initial_state must be 1D.")
+        if self.mode in ['multi_chain', 'multi_couplings'] and initial_state.ndim != 2:
+            raise ValueError(f"For '{self.mode}', initial_state must be 2D.")
+        if self.mode == 'single_chain' and initial_state.shape[0] != self.J.shape[0]:
+            raise ValueError("Initial state size does not match J dimensions.")
+        if self.mode == 'multi_chain' and initial_state.shape[1] != self.J.shape[0]:
+            raise ValueError("Initial state size does not match J dimensions.")
+        if self.mode == 'multi_couplings' and (initial_state.shape[0] != self.J.shape[0] or initial_state.shape[1] != self.J.shape[1]):
+            raise ValueError("Initial state size does not match J dimensions.")
+
+        # Initialize random seed
+        if seed is not None:
+            if self.backend == 'jax': 
+                key = jax.random.PRNGKey(seed)
+            else:
+                np.random.seed(seed)
+                key = 42
+        else:
+            key = 42  # Dummy key for non-jax backends
+
+        # Check if chain is empty, if not, print a warning
+        if (not len(self.chain) == 0) and store:
+            print(f"Warning: The chain is not empty, contains {len(self.chain)} elements. New samples will be appended to the existing chain.")
+
+        S = initial_state.copy()
+        pbar = get_progress_bar(progress, N_samples)
+
+        # Main sampling loop
+        for step in range(N_samples*dt_samples):
+            S , key = self.step(S,rnd_ord=rnd_ord,key=key)  # Perform one Gibbs sampling step
+            # Save or yield the state every `thin_by` steps
+            if step % dt_samples == 0:
+                if store:
+                    self.chain.append((S.astype(self.spin_dtype)).copy())
+                yield S.copy()
+            pbar.update(1)
+        pbar.close()
+    
+
+
+    def run_gibbs(self, initial_state,  N_samples = 1, dt_samples = 1, rnd_ord=True, seed=None, store=False , progress=False):
+        """
+        Iterate function 'sample' for 'N_samples' iterations and return the final state.
+
+        Parameters
+        ----------
+        - initial_state: Initial spin configuration. If None, use the last state in chain 
+        - N_samples: Total number of steps to perform.
+        - dt_samples: Save every 'dt_samples' steps to reduce correlation.
+        - rnd_ord: If True, update spins in random order.
+        - seed: Optional seed for random number generation (int) / mandatory for jax.
+        - store: If True, store the sampled states in memory.
+        - progress: If True, display a progress bar.
+
+        Returns
+        -------
+        np.ndarray
+            The final sampled state after ``nsteps`` iterations.
+        """
+
+        if initial_state is None:
+            if len(self.chain) == 0:
+                raise ValueError("Cannot have `initial_state=None` if run_gibbs has never been called.")
+            else:
+                # Use last state in chain and remove it to avoid duplicates
+                initial_state = self.chain.pop()
+                initial_state = initial_state.astype(self.float_dtype)
+
+        results = None
+        for results in self.sample(initial_state, N_samples=N_samples,dt_samples=dt_samples,rnd_ord=rnd_ord,seed=seed,store=store,progress=progress):
+            pass  # iterate through generator until last sample
+
+        return results
+
+
+
 
     def step(self,S,rnd_ord=True,key=None):
         """
@@ -118,109 +225,11 @@ class Sampler:
                 return jnp.swapaxes(jnp.array(self.chain),0,1)
             else:
                 return np.swapaxes(np.array(self.chain),0,1)
+    
+    def reset_chain(self):
+        """
+        Reset the stored chain of sampled states.
+        """
+        self.chain = []
        
-
-    @profile
-    def sample(self, initial_state, N_samples = 1, dt_samples = 1, rnd_ord=True, seed=None, store=False , progress = False):
-        """
-        Run Gibbs sampling as a generator.
-
-        Parameters:
-        -----------
-        - initial_state: Initial spin configuration. If None, use the last state in chain
-        - N_samples: Total number of steps to perform.
-        - dt_samples: Save every 'dt_samples' steps to reduce correlation.
-        - rnd_ord: If True, update spins in random order.
-        - seed: Optional seed for random number generation (int) / mandatory for jax.
-        - store: If True, store the sampled states in memory.
-        - progress: If True, display a progress bar.
-
-        Yields:
-        ----------
-        - The sampled state at each step (after thinning).
-        """
-
-        # Validate initial_state
-        if self.backend == 'jax':
-            if not isinstance(initial_state, jnp.ndarray):
-                raise TypeError('initial state must be a jax array.') 
-            if seed == None:
-                raise ValueError('Must specify seed when using jax.')
-        else: 
-            if not isinstance(initial_state, np.ndarray):
-                raise TypeError('initial_state must be a numpy array.')
-            
-        if self.mode == 'single_chain' and initial_state.ndim != 1:
-            raise ValueError("For 'single_chain', initial_state must be 1D.")
-        if self.mode in ['multi_chain', 'multi_couplings'] and initial_state.ndim != 2:
-            raise ValueError(f"For '{self.mode}', initial_state must be 2D.")
-        if self.mode == 'single_chain' and initial_state.shape[0] != self.J.shape[0]:
-            raise ValueError("Initial state size does not match J dimensions.")
-        if self.mode == 'multi_chain' and initial_state.shape[1] != self.J.shape[0]:
-            raise ValueError("Initial state size does not match J dimensions.")
-        if self.mode == 'multi_couplings' and (initial_state.shape[0] != self.J.shape[0] or initial_state.shape[1] != self.J.shape[1]):
-            raise ValueError("Initial state size does not match J dimensions.")
-
-        # Initialize random seed
-        if seed is not None:
-            if self.backend == 'jax': 
-                key = jax.random.PRNGKey(seed)
-            else:
-                np.random.seed(seed)
-                key = 42
-
-        # Check if chain is empty, if not, print a warning
-        if (not len(self.chain) == 0) and store:
-            print(f"Warning: The chain is not empty, contains {len(self.chain)} elements. New samples will be appended to the existing chain.")
-
-        S = initial_state.copy()
-        pbar = get_progress_bar(progress, N_samples)
-
-        # Main sampling loop
-        for step in range(N_samples*dt_samples):
-            S , key = self.step(S,rnd_ord=rnd_ord,key=key)  # Perform one Gibbs sampling step
-            # Save or yield the state every `thin_by` steps
-            if step % dt_samples == 0:
-                if store:
-                    self.chain.append((S.astype(self.spin_dtype)).copy())
-                yield S.copy()
-            pbar.update(1)
-        pbar.close()
-
-
-    def run_gibbs(self, initial_state,  N_samples = 1, dt_samples = 1, rnd_ord=True, seed=None, store=False , progress=False):
-        """
-        Iterate function 'sample' for 'N_samples' iterations and return the final state.
-
-        Parameters
-        ----------
-        - initial_state: Initial spin configuration. If None, use the last state in chain 
-        - N_samples: Total number of steps to perform.
-        - dt_samples: Save every 'dt_samples' steps to reduce correlation.
-        - rnd_ord: If True, update spins in random order.
-        - seed: Optional seed for random number generation (int) / mandatory for jax.
-        - store: If True, store the sampled states in memory.
-        - progress: If True, display a progress bar.
-
-        Returns
-        -------
-        np.ndarray
-            The final sampled state after ``nsteps`` iterations.
-        """
-
-        if initial_state is None:
-            if len(self.chain) == 0:
-                raise ValueError("Cannot have `initial_state=None` if run_gibbs has never been called.")
-            else:
-                # Use last state in chain and remove it to avoid duplicates
-                initial_state = self.chain.pop()
-                initial_state = initial_state.astype(self.float_dtype)
-
-
-        results = None
-        for results in self.sample(initial_state, N_samples=N_samples,dt_samples=dt_samples,rnd_ord=rnd_ord,seed=seed,store=store,progress=progress):
-            pass  # iterate through generator until last sample
-
-        return results
-
 

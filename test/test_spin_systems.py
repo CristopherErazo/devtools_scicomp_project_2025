@@ -8,7 +8,7 @@ def test_hopfield_model():
     with pytest.raises(ValueError):
         define_hopfield_model(N, p, N_walkers=1, mode='multi_couplings')
 
-    for mode in ['single_chain' , 'multi_chain']:
+    for mode in ['single_chain']:
         with pytest.raises(ValueError):
             define_hopfield_model(N, p, N_walkers=2, mode=mode)
     
@@ -22,7 +22,7 @@ def test_SK_model():
     with pytest.raises(ValueError):
         define_SK_model(N, N_walkers=1, mode='multi_couplings')
 
-    for mode in ['single_chain' , 'multi_chain']:
+    for mode in ['single_chain' ]:
         with pytest.raises(ValueError):
             define_SK_model(N, N_walkers=2, mode=mode)
     
@@ -35,7 +35,7 @@ def test_random_model():
     with pytest.raises(ValueError):
         define_random_model(N, N_walkers=1, mode='multi_couplings')
 
-    for mode in ['single_chain' , 'multi_chain']:
+    for mode in ['single_chain' ]:
         with pytest.raises(ValueError):
             define_random_model(N, N_walkers=2, mode=mode)
     

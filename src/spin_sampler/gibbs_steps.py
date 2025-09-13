@@ -19,7 +19,7 @@ def gibbs_step_single_chain(S, J, T, rnd_ord = True , key = None):
     single chain with J.
 
     Parameters:
-    ----------
+    -----------
     - S: Spin configuration shape (N,).
     - J: Coupling matrix (shape (N, N)).
     - T: Temperature.
@@ -27,7 +27,7 @@ def gibbs_step_single_chain(S, J, T, rnd_ord = True , key = None):
     - key: Dummy variable for compatibility with JAX functions.
 
     Returns:
-    ----------
+    --------
     - Updated spin configuration and dummy variable.
     """
     beta = 1 / T  
@@ -50,7 +50,7 @@ def gibbs_step_multi_chain(S, J, T, rnd_ord = True,  key = None):
     multiple chains with same J.
 
     Parameters:
-    ----------
+    -----------
     - S: Spin configuration shape (N_walkers,N).
     - J: Coupling matrix (shape (N, N)).
     - T: Temperature.
@@ -58,7 +58,7 @@ def gibbs_step_multi_chain(S, J, T, rnd_ord = True,  key = None):
     - key: Dummy variable for compatibility with JAX functions.
 
     Returns:
-    ----------
+    --------
     - Updated spin configuration and dummy variable.
     """
     beta = 1 / T  
@@ -81,7 +81,7 @@ def gibbs_step_multi_couplings(S, J, T, rnd_ord = True , key = None):
     multiple chains with different J.
 
     Parameters:
-    ----------
+    -----------
     - S: Spin configuration (shape (N_walkers, N)).
     - J: Coupling matrices (shape (N_walkers, N, N)).
     - T: Temperature.
@@ -89,7 +89,7 @@ def gibbs_step_multi_couplings(S, J, T, rnd_ord = True , key = None):
     - key: Dummy variable for compatibility with JAX functions.
 
     Returns:
-    ----------
+    --------
     - Updated spin configuration and dummy variable.
     """
     beta = 1 / T  
@@ -118,7 +118,7 @@ def gibbs_step_single_chain_jax(S , J , T , rnd_ord = False, key = None):
     single chain with J.
 
     Parameters:
-    ----------
+    -----------
     - S: Spin configuration shape (N,).
     - J: Coupling matrix (shape (N, N)).
     - T: Temperature.
@@ -126,7 +126,7 @@ def gibbs_step_single_chain_jax(S , J , T , rnd_ord = False, key = None):
     - key: PRNG key for randomness.
 
     Returns:
-    ----------
+    --------
     - Updated spin configuration and new PRNG key.
     """
     N = S.shape[0]
@@ -164,7 +164,7 @@ def gibbs_step_multi_chain_jax(S , J , T , rnd_ord = False, key = None):
     multiple chains with same J.
 
     Parameters:
-    ----------
+    -----------
     - S: Spin configuration shape (N_walkers,N).
     - J: Coupling matrix (shape (N, N)).
     - T: Temperature.
@@ -172,7 +172,7 @@ def gibbs_step_multi_chain_jax(S , J , T , rnd_ord = False, key = None):
     - key: PRNG key for randomness.
 
     Returns:
-    ----------
+    --------
     - Updated spin configuration and new PRNG key.
     """
 
@@ -212,7 +212,7 @@ def gibbs_step_multi_couplings_jax(S , J , T , rnd_ord = False, key = None):
     multiple chains with same J.
 
     Parameters:
-    ----------
+    -----------
     - S: Spin configuration (shape (N_walkers, N)).
     - J: Coupling matrices (shape (N_walkers, N, N)).
     - T: Temperature.
@@ -220,7 +220,7 @@ def gibbs_step_multi_couplings_jax(S , J , T , rnd_ord = False, key = None):
     - key: PRNG key for randomness.
 
     Returns:
-    ----------
+    --------
     - Updated spin configuration and new PRNG key.
     """
     N_walkers , N = S.shape
