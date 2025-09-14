@@ -17,6 +17,13 @@ To install the Spin Sampler library, follow these steps:
 
        pip install -r requirements.txt
 
+3. Precompile the ``numba`` module:
+
+   .. code-block:: bash
+
+       python src/spin_sampler/compile_gibbs.py
+       
+
 4. Install the package:
 
    .. code-block:: bash

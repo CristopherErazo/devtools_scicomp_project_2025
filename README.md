@@ -84,8 +84,13 @@ To install the Spin Sampler library :
     ```bash
     pip install -r requirements.txt
     ```
+3. Precompile the `numba` module. This creates a `.so` file that containes the precompiled version of the `numba` functions and can be called as a module:
 
-3. Install the package:
+    ```bash
+    python src/spin_sampler/compile_gibbs.py
+    ```
+
+4. Install the package:
     ```bash
     pip install .
     ```
