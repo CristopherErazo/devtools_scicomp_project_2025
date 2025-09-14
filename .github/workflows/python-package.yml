@@ -28,7 +28,8 @@ jobs:
       run: |
         source venv/bin/activate
         pip install -r requirements.txt
-        pip install pytest sphinx
+        pip install sphinx
+        pip install sphinx_rtd_theme
 
     - name: Install package
       run: |

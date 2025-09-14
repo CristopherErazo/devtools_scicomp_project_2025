@@ -72,14 +72,15 @@ The inner loop over the $N$ spins is referred to as a `gibbs_step`, and it is th
 
 ## Installation
 
-To install the Spin Sampler library:
+To install the Spin Sampler library :
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/CristopherErazo/devtools_scicomp_project_2025.git
+    git clone https://github.com/CristopherErazo/devtools_scicomp_project_2025.git <folder_name>
+
     ```
 
-2. Install dependencies:
+2. Navigate to the folder directory, create and activate a virtual environment (with `python 3.9` preferably) and install the required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
