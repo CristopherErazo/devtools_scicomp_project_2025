@@ -46,15 +46,10 @@ Algorithm
 
 The Gibbs sampling algorithm starts at :math:`t=0` with the initial configuration :math:`\boldsymbol{s}^{(0)} \in \{-1, +1\}^N, \;` and continues as:
 
-:math:`\text{For } t = 1 \text{ to } N_S:`
+.. image:: _static/algorithm.png
+   :alt: Visual representation of the Gibbs sampling algorithm
+   :align: center
+   :width: 60%
 
-:math:`\quad - \;\text{For } i = 1 \text{ to } N:`
-
-:math:`\quad \quad \bullet \; \text{Define } \boldsymbol{s}_{\setminus i}^{(t)} =\left(\{s_j^{(t)}\}_{j<i}, \{s_j^{(t-1)}\}_{j>i}\right) \qquad \qquad`
-:math:`\quad \quad \bullet \; \text{Compute } h_i^{(t)} \text{ using } \boldsymbol{s}_{\setminus i}^{(t)}\qquad \qquad \qquad \qquad\qquad \qquad\qquad \qquad`
-:math:`\quad \quad \bullet \; \text{Update } s_i^{(t)} \text{ using } h_i^{(t)}\qquad \qquad`
-
-:math:`\quad - \;\text{Transition } \boldsymbol{s}^{(t-1)} \to \boldsymbol{s}^{(t)}`
-
-The only important thing to notice about the algorithm is that the inner loop must be done sequentially because the value of spin :math:`i` at time :math:`t` depends on the values of all other spins :math:`j<i` that were already updated in the same :math:`t`. 
+The only important thing to notice about the algorithm is that the inner loop over :math:`N` (refered in the library as ``gibbs_step``) must be done sequentially because the value of spin :math:`i` at time :math:`t` depends on the values of all other spins :math:`j<i` that were already updated in the same :math:`t`. 
 This is different from other sampling problems where the update :math:`(t-1) \rightarrow(t)` can be done in a single step and even if there are many variables involved one could use parallelization techniques to make the update efficient.

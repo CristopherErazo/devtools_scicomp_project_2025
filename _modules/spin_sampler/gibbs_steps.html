@@ -89,6 +89,7 @@
 <span class="c1"># NUMPY FUNCTIONS</span>
 <div class="viewcode-block" id="gibbs_step_single_chain">
 <a class="viewcode-back" href="../../api.html#spin_sampler.gibbs_steps.gibbs_step_single_chain">[docs]</a>
+<span class="nd">@profile</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">gibbs_step_single_chain</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">rnd_ord</span> <span class="o">=</span> <span class="kc">True</span> <span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One full update of spin state using Gibbs sampling for </span>
@@ -123,6 +124,7 @@
 
 <div class="viewcode-block" id="gibbs_step_multi_chain">
 <a class="viewcode-back" href="../../api.html#spin_sampler.gibbs_steps.gibbs_step_multi_chain">[docs]</a>
+<span class="nd">@profile</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">gibbs_step_multi_chain</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">rnd_ord</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>  <span class="n">key</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One full update of spin state using Gibbs sampling for </span>
@@ -157,6 +159,7 @@
 
 <div class="viewcode-block" id="gibbs_step_multi_couplings">
 <a class="viewcode-back" href="../../api.html#spin_sampler.gibbs_steps.gibbs_step_multi_couplings">[docs]</a>
+<span class="nd">@profile</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">gibbs_step_multi_couplings</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">rnd_ord</span> <span class="o">=</span> <span class="kc">True</span> <span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One full update of spin state using Gibbs sampling for </span>

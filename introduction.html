@@ -107,13 +107,9 @@
 <section id="algorithm">
 <h2>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading"></a></h2>
 <p>The Gibbs sampling algorithm starts at <span class="math notranslate nohighlight">\(t=0\)</span> with the initial configuration <span class="math notranslate nohighlight">\(\boldsymbol{s}^{(0)} \in \{-1, +1\}^N, \;\)</span> and continues as:</p>
-<p><span class="math notranslate nohighlight">\(\text{For } t = 1 \text{ to } N_S:\)</span></p>
-<p><span class="math notranslate nohighlight">\(\quad - \;\text{For } i = 1 \text{ to } N:\)</span></p>
-<p><span class="math notranslate nohighlight">\(\quad \quad \bullet \; \text{Define } \boldsymbol{s}_{\setminus i}^{(t)} =\left(\{s_j^{(t)}\}_{j&lt;i}, \{s_j^{(t-1)}\}_{j&gt;i}\right) \qquad \qquad\)</span>
-<span class="math notranslate nohighlight">\(\quad \quad \bullet \; \text{Compute } h_i^{(t)} \text{ using } \boldsymbol{s}_{\setminus i}^{(t)}\qquad \qquad \qquad \qquad\qquad \qquad\qquad \qquad\)</span>
-<span class="math notranslate nohighlight">\(\quad \quad \bullet \; \text{Update } s_i^{(t)} \text{ using } h_i^{(t)}\qquad \qquad\)</span></p>
-<p><span class="math notranslate nohighlight">\(\quad - \;\text{Transition } \boldsymbol{s}^{(t-1)} \to \boldsymbol{s}^{(t)}\)</span></p>
-<p>The only important thing to notice about the algorithm is that the inner loop must be done sequentially because the value of spin <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> depends on the values of all other spins <span class="math notranslate nohighlight">\(j&lt;i\)</span> that were already updated in the same <span class="math notranslate nohighlight">\(t\)</span>.
+<a class="reference internal image-reference" href="_images/algorithm.png"><img alt="Visual representation of the Gibbs sampling algorithm" class="align-center" src="_images/algorithm.png" style="width: 60%;" />
+</a>
+<p>The only important thing to notice about the algorithm is that the inner loop over <span class="math notranslate nohighlight">\(N\)</span> (refered in the library as <code class="docutils literal notranslate"><span class="pre">gibbs_step</span></code>) must be done sequentially because the value of spin <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> depends on the values of all other spins <span class="math notranslate nohighlight">\(j&lt;i\)</span> that were already updated in the same <span class="math notranslate nohighlight">\(t\)</span>.
 This is different from other sampling problems where the update <span class="math notranslate nohighlight">\((t-1) \rightarrow(t)\)</span> can be done in a single step and even if there are many variables involved one could use parallelization techniques to make the update efficient.</p>
 </section>
 </section>
