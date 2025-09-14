@@ -59,7 +59,7 @@ def main():
 
     print(data.keys())
     # Save the dictionary to a file
-    with open('logs/data.pkl', 'wb') as f:
+    with open('logs/new_data.pkl', 'wb') as f:
         pickle.dump(data, f)
 
 

@@ -20,7 +20,7 @@ mode: ${mode}
 N_walkers: $([[ "$mode" == "single_chain" ]] && echo 1 || echo $Nw)
 EOL
 
-kernprof -l -v scripts/run_profile.py -c experiments/config_$mode > logs/profiling_mode_$mode.txt
+kernprof -l -v scripts/run_profile.py -c experiments/config_$mode > logs/new_profiling_mode_$mode.txt
 
 
 done

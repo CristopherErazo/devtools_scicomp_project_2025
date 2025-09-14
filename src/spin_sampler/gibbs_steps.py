@@ -13,6 +13,7 @@ type_reals_np = np.float32
 
 
 # NUMPY FUNCTIONS
+@profile
 def gibbs_step_single_chain(S, J, T, rnd_ord = True , key = None):
     """
     One full update of spin state using Gibbs sampling for 
@@ -44,6 +45,7 @@ def gibbs_step_single_chain(S, J, T, rnd_ord = True , key = None):
         S[i] = 1 if rand_vals < p_plus else -1
     return S , key
 
+@profile
 def gibbs_step_multi_chain(S, J, T, rnd_ord = True,  key = None):
     """
     One full update of spin state using Gibbs sampling for 
@@ -75,6 +77,7 @@ def gibbs_step_multi_chain(S, J, T, rnd_ord = True,  key = None):
         S[:, i] = np.where(rand_vals < p_plus, 1, -1)
     return S , key
 
+@profile
 def gibbs_step_multi_couplings(S, J, T, rnd_ord = True , key = None):
     """
     One full update of spin state using Gibbs sampling for 

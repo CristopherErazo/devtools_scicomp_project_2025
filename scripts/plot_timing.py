@@ -10,7 +10,7 @@ colors = ['coral','indigo','springgreen']
 
 def main():
     # Load the data
-    with open('logs/data.pkl', 'rb') as f:
+    with open('logs/new_data.pkl', 'rb') as f:
         data = pickle.load(f)
     
     Ns = data['Ns']
@@ -42,10 +42,10 @@ def main():
         ax.set_xlim(0.9*min(Ns), 1.1*max(Ns))
         # ax.legend()
     
-    axes[0].legend(frameon=False)
+    axes[0].legend(frameon=False,fontsize=8)
     title = rf"Time performance for $N_{{samples}} = {N_samples}$ and averaged over {N_iterations} iterations. $N_{{walkers}} = {N_walkers}$ for 'multi' modes"
     fig.suptitle(title)
-    fig.savefig('logs/timing.png', dpi=300, bbox_inches='tight')
+    fig.savefig('logs/new_timing.png', dpi=300, bbox_inches='tight')
     print(data.keys())
 
 
