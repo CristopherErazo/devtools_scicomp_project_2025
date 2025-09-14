@@ -57,11 +57,12 @@ def main():
 
             data[mode][backend] = times
 
-    print(data.keys())
+
     # Save the dictionary to a file
     with open('logs/new_data.pkl', 'wb') as f:
         pickle.dump(data, f)
-
+        
+    print("Data saved to logs/new_data.pkl")
 
 if __name__ == "__main__":
     main()

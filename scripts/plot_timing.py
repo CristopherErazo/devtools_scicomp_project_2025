@@ -46,7 +46,7 @@ def main():
     title = rf"Time performance for $N_{{samples}} = {N_samples}$ and averaged over {N_iterations} iterations. $N_{{walkers}} = {N_walkers}$ for 'multi' modes"
     fig.suptitle(title)
     fig.savefig('logs/new_timing.png', dpi=300, bbox_inches='tight')
-    print(data.keys())
+    print('Image saved to logs/new_timing.png')
 
 
 if __name__ == "__main__":
