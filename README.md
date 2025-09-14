@@ -53,7 +53,7 @@ $$
 P(s_i = +1 \mid \mathbf{s}_{\backslash i}) = \frac{1}{1 + \exp(-2\beta h_i)}
 $$
 
-where $\mathbf{s}_{\setminus i} \equiv (s_j)_{j \neq i}$ and the local field is:
+where $\mathbf{s}_{\backslash i} = \lbrace s_j : j  ≠  i\rbrace$ and the local field is:
 
 $$
 h_i = \sum_{j \neq i} J_{ij} s_j
