@@ -1,8 +1,4 @@
-Name: Cristopher Ricardo Erazo Vallejos
 
-email: cerazova@sissa.it
-
-course: TSDS PhD.
 
 Name: Cristopher Ricardo Erazo Vallejos  
 Email: cerazova@sissa.it  
@@ -26,47 +22,47 @@ For more details, check the [documentation](https://cristophererazo.github.io/de
 
 ## Problem
 
-The goal is to sample configurations $\;\boldsymbol{s} \in \{-1,+1\}^N$ from the Boltzmann distribution of a system of $N$ spins in thermal equilibrium at temperature $T = 1/\beta$:
+The goal is to sample configurations $\mathbf{s} \in \lbrace -1,+1\rbrace^N$ from the Boltzmann distribution of a system of $N$ spins in thermal equilibrium at temperature $T = 1/\beta$:
 
 $$
-\mu(\boldsymbol{s}) = \frac{e^{-\beta H(\boldsymbol{s})}}{Z_\beta}
+\mu(\mathbf{s}) = \frac{e^{-\beta H(\mathbf{s})}}{Z_\beta}
 $$
 
 The system is governed by a Hamiltonian with pairwise interactions:
 
 $$
-H(\boldsymbol{s}) = -\frac{1}{2} \sum_{i=1}^N s_i \;J_{ij} \; s_j
+H(\mathbf{s}) = -\frac{1}{2} \sum_{i=1}^N s_i J_{ij} s_j
 $$
 
-Here, the coupling matrix $\boldsymbol{J} = (J_{ij})$ fully characterizes the system. In spin glass models, $\boldsymbol{J}$ is usually a random variable.  
+Here, the coupling matrix $\mathbf{J} = (J_{ij})$ fully characterizes the system. In spin glass models, $\mathbf{J}$ is usually a random variable.  
 
 The sampler provides three modes for different use cases:
 
-- **`single_chain`**: Runs one Markov chain for Gibbs sampling. This is the default and works well for most applications.  
-- **`multi_chains`**: Runs multiple chains in parallel with the same coupling matrix. Useful for exploring the state space from different initial conditions or obtaining statistically independent samples.  
-- **`multi_couplings`**: Runs multiple chains in parallel, each with a different coupling matrix. Useful for studying ensembles of systems where $\boldsymbol{J}$ is drawn from a distribution $\mathbb{P}(\boldsymbol{J})$.  
+- `single_chain`: Runs one Markov chain for Gibbs sampling. This is the default and works well for most applications.  
+- `multi_chains`: Runs multiple chains in parallel with the same coupling matrix. Useful for exploring the state space from different initial conditions or obtaining statistically independent samples.  
+- `multi_couplings`: Runs multiple chains in parallel, each with a different coupling matrix. Useful for studying ensembles of systems where $\mathbf{J}$ is drawn from a distribution $\mathbb{P}(\mathbf{J})$.  
 
 ---
 
 ## Algorithm
 
 
-To sample from the distribution $\mu(\boldsymbol{s})$, we use the Gibbs sampling algorithm, which updates spins sequentially according to the conditional probability that can be computed analitically.
+To sample from the distribution $\mu(\mathbf{s})$, we use the Gibbs sampling algorithm, which updates spins sequentially according to the conditional probability that can be computed analitically.
 
 $$
-P(s_i = +1 \mid \boldsymbol{s}_{\setminus i}) = \frac{1}{1 + \exp(-2\beta h_i)}
+P(s_i = +1 \mid \mathbf{s}_{\backslash i}) = \frac{1}{1 + \exp(-2\beta h_i)}
 $$
 
-where $\boldsymbol{s}_{\setminus i} \equiv (s_j)_{j \neq i}$ and the local field is:
+where $\mathbf{s}_{\setminus i} \equiv (s_j)_{j \neq i}$ and the local field is:
 
 $$
 h_i = \sum_{j \neq i} J_{ij} s_j
 $$
 
-To obtain a dataset $\boldsymbol{S}$ of $N_s$ samples, we start with an initial configuration $\boldsymbol{s}^{(0)}$ and run the Gibbs Sampling procedure.  
+To obtain a dataset $\mathbf{S}$ of $N_s$ samples, we start with an initial configuration $\mathbf{s}^{(0)}$ and run the Gibbs Sampling procedure.  
 
 <div style="text-align: center;">
-    <img src="docs/_static/algorithm.png" alt="Algorithm" style="width: 80%;">
+    <img src="docs/_static/algorithm.png" alt="Algorithm" style="width: 50%;">
 </div>
 
 
@@ -188,7 +184,7 @@ this will create a new data file in the `logs` directory and then
 python scripts/plot_timing.py
 ```
 
-will create plot the results, saving the image in the same directory.
+will create a plot of the results, saving the image in the same directory.
 
 ⚠️ **Note**: Experiments may take more than 1 hour due to scaling with $N$. To speed up, reduce parameters in `experiments/config_timing.yaml`. You can play with `Ns`, `N_samples` or `N_iterations`. 
 
@@ -197,7 +193,7 @@ will create plot the results, saving the image in the same directory.
 
 ## Future Improvements
 
-To keep comparisons fair, the `gibbs_step` logic was kept similar across `numpy` and `jax` implementations. However, different libraries provide different optimizations. Tailoring the implementation per backend could further improve performance.
+To keep comparisons fair, the `gibbs_step` logic was kept similar across `numpy` and `jax` implementations. However, since each library offers unique optimizations, customizing the implementation for each backend could lead to better performance.
 
 Bellow we see a summary of the profiling  results within the `gibbs_step` function for the `numpy` case in the 3 sampling modes.
 
@@ -247,7 +243,7 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    110       500        189.9      0.4      0.0      return S  , key
 ```
 
-Profiling shows that the most expensive operations are computing local fields $h_i$ and probabilities $P(s_i = +1 \mid \boldsymbol{s}_{\setminus i})$ but the load is different for different modes. Implementing other optimization techniques, such as vectorization across chains when possible, may yield significant speedups.
+Profiling shows that the most expensive operations are computing local fields $h_i$ and probabilities $P(s_i = +1 \mid \mathbf{s}_{\setminus i})$ but the load is different for different modes. Implementing other optimization techniques, such as vectorization across chains when possible, may yield significant speedups.
 
 
 ---
