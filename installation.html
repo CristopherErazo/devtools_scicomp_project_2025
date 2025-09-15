@@ -89,7 +89,13 @@
 </pre></div>
 </div>
 </li>
-<li><p>Navigate to the folder directory, create and activate a virtual environment (with <cite>python 3.9</cite> preferably) and install the required dependencies:</p>
+<li><p>Navigate to the folder directory, create and activate a virtual environment (with <cite>python 3.9</cite> preferably):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>&lt;name&gt;<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
+conda<span class="w"> </span>activate<span class="w"> </span>&lt;name&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Install the required dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 </pre></div>
 </div>
@@ -99,6 +105,9 @@
 </pre></div>
 </div>
 </li>
+</ol>
+<p>This creates a file (<cite>.so</cite> in linux or <cite>.pyd</cite> in Windows) that contains the precompiled version of the <cite>numba</cite> functions and can be called as a module. If running on Windows you might need to install <a class="reference external" href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">MSVC Build Tools</a> first, selecting <em>Desktop development with C++</em> during installation.</p>
+<ol class="arabic" start="5">
 <li><p>Install the package:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.
 </pre></div>
