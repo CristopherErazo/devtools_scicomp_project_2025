@@ -84,11 +84,12 @@ To install the Spin Sampler library :
     ```bash
     pip install -r requirements.txt
     ```
-3. Precompile the `numba` module. This creates a `.so` file that containes the precompiled version of the `numba` functions and can be called as a module:
+3. Precompile the `numba` module. 
 
     ```bash
     python src/spin_sampler/compile_gibbs.py
     ```
+    This creates a file (`.so` in linux or `.pyd` in Windows) that contains the precompiled version of the `numba` functions and can be called as a module. If running on Windows you might need to install [MSVC Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) first, selecting *Desktop development with C++* during installation.
 
 4. Install the package:
     ```bash
@@ -192,8 +193,20 @@ python scripts/plot_timing.py
 
 will create a plot of the results, saving the image in the same directory.
 
-⚠️ **Note**: Experiments may take more than 1 hour due to scaling with $N$. To speed up, reduce parameters in `experiments/config_timing.yaml`. You can play with `Ns`, `N_samples` or `N_iterations`. 
+⚠️ **Note**: Experiments may take more than 1 hour due to scaling with $N$. To speed up, reduce parameters in `experiments/config_timing.yaml`. 
 
+*Recomended parameters for faster compilation:*
+
+```bash
+Ns : [128 , 256 , 512 ]
+modes : ['single_chain', 'multi_chain','multi_couplings']
+backends : ['numpy', 'numba', 'jax']
+N_walkers : 3
+dt_samples : 1
+N_samples : 300
+T : 1.0
+N_iterations : 2
+```
 
 ---
 

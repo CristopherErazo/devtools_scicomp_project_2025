@@ -23,4 +23,4 @@ dependencies = { file = ["requirements.txt"] }
 test = ["pytest"]
 
 [tool.setuptools.package-data]
-"spin_sampler" = ["*.so"]
+"spin_sampler" = ["*.so", "*.pyd"]
